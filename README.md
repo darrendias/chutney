@@ -1,6 +1,6 @@
 # 🎓 Darren’s EdTech Tools Suite — Built for International Students
 
-A modern, ultra-premium, and fully responsive suite of five unified tools designed to guide international students through their journey to and across the United Kingdom. 
+A modern, ultra-premium, and fully responsive suite of four unified tools designed to guide international students through their journey to and across the United Kingdom. 
 
 Built with an elegant, cohesive visual identity, this project elevates raw functional utilities into an engaging, high-end digital experience that feels alive, premium, and seamless.
 
@@ -68,29 +68,6 @@ This suite was built to prove that premium, ultra-modern web experiences do not 
     ```html
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
     ```
-
----
-
-## 🚦 Getting Started
-
-To launch and explore the student tools:
-
-1.  **Direct Browser Run:**
-    Simply double-click [`index.html`](file:///Users/thedarrendias/Downloads/chutney/index.html) or open it directly inside any modern browser (Chrome, Safari, Firefox, Edge).
-    
-2.  **Instant Local Development Server:**
-    For the smoothest transition and instant theme synchronization, serve the directory locally using one of the commands below:
-    
-    *   **Using Python 3:**
-        ```bash
-        python -m http.server 8000
-        ```
-        Then navigate to `http://localhost:8000` in your browser.
-        
-    *   **Using Node.js (`live-server`):**
-        ```bash
-        npx live-server
-        ```
 
 ---
 
