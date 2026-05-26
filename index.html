@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Darren's EdTech Tools — Built for International Students</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+
+  <!-- Premium Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    /* RESET & CORE SYSTEM */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* THEME VARIABLES (CREAM & COCOA) */
+    :root[data-theme="light"] {
+      --bg: #FBF9F6;
+      --bg-grid: rgba(138, 120, 102, 0.035);
+      --text: #1C1917;
+      --text-muted: #6B6259;
+      --border: rgba(220, 210, 198, 0.6);
+      --border-glow-default: rgba(220, 210, 198, 0.3);
+      --card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(252, 250, 247, 0.9) 100%);
+      --card-shadow: 0 10px 30px -10px rgba(138, 120, 102, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
+      --card-shadow-hover: 0 20px 45px -12px rgba(138, 120, 102, 0.16), 0 4px 12px rgba(138, 120, 102, 0.04);
+      --header-bg: rgba(251, 249, 246, 0.8);
+      --footer-hr: rgba(220, 210, 198, 0.5);
+
+      /* Accent Colors - Light Theme */
+      --color-red: hsl(14, 95%, 48%);
+      --color-red-rgb: 232, 66, 10;
+      --color-blue: hsl(215, 85%, 46%);
+      --color-blue-rgb: 26, 95, 168;
+      --color-teal: hsl(150, 68%, 32%);
+      --color-teal-rgb: 30, 122, 69;
+      --color-purple: hsl(266, 68%, 48%);
+      --color-purple-rgb: 123, 63, 196;
+
+      --bg-glow-1: rgba(232, 66, 10, 0.04);
+      --bg-glow-2: rgba(123, 63, 196, 0.04);
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0D0B0A;
+      --bg-grid: rgba(255, 255, 255, 0.015);
+      --text: #F9F8F6;
+      --text-muted: #9E938A;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-glow-default: rgba(255, 255, 255, 0.03);
+      --card-bg: linear-gradient(135deg, rgba(23, 20, 19, 0.7) 0%, rgba(15, 13, 12, 0.85) 100%);
+      --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      --card-shadow-hover: 0 25px 50px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      --header-bg: rgba(13, 11, 10, 0.8);
+      --footer-hr: rgba(255, 255, 255, 0.06);
+
+      /* Accent Colors - Dark Theme */
+      --color-red: hsl(14, 95%, 56%);
+      --color-red-rgb: 232, 66, 10;
+      --color-blue: hsl(215, 90%, 60%);
+      --color-blue-rgb: 26, 95, 168;
+      --color-teal: hsl(152, 70%, 45%);
+      --color-teal-rgb: 30, 122, 69;
+      --color-purple: hsl(266, 80%, 66%);
+      --color-purple-rgb: 123, 63, 196;
+
+      --bg-glow-1: rgba(232, 66, 10, 0.07);
+      --bg-glow-2: rgba(123, 63, 196, 0.07);
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* BACKGROUND DESIGN ELEMENTS */
+    .bg-grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.8;
+      will-change: transform;
+    }
+
+    .bg-glow-1 {
+      top: -10%;
+      left: -5%;
+      background: var(--bg-glow-1);
+      animation: floatGlow 18s infinite alternate ease-in-out;
+    }
+
+    .bg-glow-2 {
+      bottom: -10%;
+      right: -5%;
+      background: var(--bg-glow-2);
+      animation: floatGlow 22s infinite alternate-reverse ease-in-out;
+    }
+
+    @keyframes floatGlow {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      100% {
+        transform: translate(50px, 30px) scale(1.1);
+      }
+    }
+
+    /* HEADER & LIGHT/DARK TOGGLE */
+    header {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      transition: all 0.3s;
+    }
+
+    .header-container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Elevated Study Tools Logo */
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .logo-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      color: #fff;
+      border-radius: 6px;
+      line-height: 1;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .logo-row:hover .logo-letter {
+      transform: translateY(-2px) scale(1.08);
+    }
+
+    .logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-left: 2px;
+    }
+
+    /* Theme Switcher Button */
+    .theme-toggle-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 6px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      width: 58px;
+      height: 32px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .theme-toggle-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--text);
+      position: absolute;
+      left: 5px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-size: 10px;
+    }
+
+    [data-theme="dark"] .theme-toggle-thumb {
+      transform: translateX(26px);
+    }
+
+    .theme-toggle-btn svg {
+      width: 13px;
+      height: 13px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .theme-toggle-btn svg.active {
+      opacity: 1;
+    }
+
+    .theme-icons {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 4px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* HERO SECTION */
+    .hero {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 80px 24px 48px;
+      position: relative;
+      z-index: 10;
+      text-align: left;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-red);
+      letter-spacing: 0.02em;
+      margin-bottom: 24px;
+      box-shadow: var(--card-shadow);
+      animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .badge span {
+      width: 6px;
+      height: 6px;
+      background: var(--color-red);
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 8px var(--color-red);
+      animation: pulseGlow 2s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        transform: scale(0.95);
+        opacity: 0.5;
+      }
+
+      50% {
+        transform: scale(1.15);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(0.95);
+        opacity: 0.5;
+      }
+    }
+
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(36px, 6.5vw, 54px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      margin-bottom: 20px;
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, var(--color-red) 0%, #D4920A 50%, var(--color-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      display: inline-block;
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      max-width: 580px;
+      margin-bottom: 12px;
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+    }
+
+    /* GRID SECTION */
+    .grid {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      position: relative;
+      z-index: 10;
+      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+    }
+
+    @media(max-width: 560px) {
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+
+    /* PREMIUM CARD DESIGN */
+    .card {
+      position: relative;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      text-decoration: none;
+      color: inherit;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--card-shadow);
+      /* Precise touch to allow mouse border glow */
+      z-index: 1;
+      padding: 1px;
+      /* spacing for border glow */
+    }
+
+    .card-border-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: radial-gradient(300px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), var(--card-glow-border, transparent), transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .card-inner-glow {
+      position: absolute;
+      inset: 1px;
+      border-radius: 23px;
+      background: radial-gradient(350px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), var(--card-glow-inner, transparent), transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 2;
+      background: var(--card-bg);
+      border-radius: 23px;
+      padding: 30px 26px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    /* Card Mouse Glow Activation */
+    .card:hover {
+      box-shadow: var(--card-shadow-hover);
+      transform: translateY(-4px);
+    }
+
+    .card:hover .card-border-glow,
+    .card:hover .card-inner-glow {
+      opacity: 1;
+    }
+
+    /* CARD ICON / CONTAINER */
+    .card-icon-container {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+      position: relative;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .card-icon {
+      font-size: 26px;
+      line-height: 1;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .card:hover .card-icon-container {
+      transform: translateY(-2px) scale(1.05);
+    }
+
+    .card:hover .card-icon {
+      transform: scale(1.15) rotate(5deg);
+    }
+
+    /* CARD TYPOGRAPHY */
+    .card-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      transition: color 0.3s;
+    }
+
+    .card-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .card-desc {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 26px;
+      flex: 1;
+    }
+
+    /* LAUNCH BUTTONS */
+    .launch-btn-wrapper {
+      align-self: flex-start;
+      margin-top: auto;
+    }
+
+    .launch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 10px 20px;
+      border-radius: 100px;
+      color: #fff;
+      box-shadow: 0 4px 12px var(--shadow-color);
+      transition: transform 0.2s, filter 0.2s, box-shadow 0.2s;
+    }
+
+    .launch-btn .arrow {
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: inline-block;
+    }
+
+    .card:hover .launch-btn {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px var(--shadow-color);
+      filter: brightness(1.06);
+    }
+
+    .card:hover .launch-btn .arrow {
+      transform: translateX(4px);
+    }
+
+    /* COLOR THEME SPECIFICS (HSL BASED) */
+
+    /* RED / CHUTNEY */
+    .card.red {
+      --card-glow-border: rgba(var(--color-red-rgb), 0.18);
+      --card-glow-inner: rgba(var(--color-red-rgb), 0.08);
+    }
+
+    .card.red .card-icon-container {
+      background: rgba(var(--color-red-rgb), 0.08);
+      border: 1px solid rgba(var(--color-red-rgb), 0.15);
+    }
+
+    .card.red .card-label {
+      color: var(--color-red);
+    }
+
+    .card.red .launch-btn {
+      background: var(--color-red);
+      --shadow-color: rgba(var(--color-red-rgb), 0.25);
+    }
+
+    /* BLUE / UNIMATCH */
+    .card.blue {
+      --card-glow-border: rgba(var(--color-blue-rgb), 0.18);
+      --card-glow-inner: rgba(var(--color-blue-rgb), 0.08);
+    }
+
+    .card.blue .card-icon-container {
+      background: rgba(var(--color-blue-rgb), 0.08);
+      border: 1px solid rgba(var(--color-blue-rgb), 0.15);
+    }
+
+    .card.blue .card-label {
+      color: var(--color-blue);
+    }
+
+    .card.blue .launch-btn {
+      background: var(--color-blue);
+      --shadow-color: rgba(var(--color-blue-rgb), 0.25);
+    }
+
+    /* TEAL / VISAPATH */
+    .card.teal {
+      --card-glow-border: rgba(var(--color-teal-rgb), 0.18);
+      --card-glow-inner: rgba(var(--color-teal-rgb), 0.08);
+    }
+
+    .card.teal .card-icon-container {
+      background: rgba(var(--color-teal-rgb), 0.08);
+      border: 1px solid rgba(var(--color-teal-rgb), 0.15);
+    }
+
+    .card.teal .card-label {
+      color: var(--color-teal);
+    }
+
+    .card.teal .launch-btn {
+      background: var(--color-teal);
+      --shadow-color: rgba(var(--color-teal-rgb), 0.25);
+    }
+
+    /* PURPLE / COSTCHECK */
+    .card.purple {
+      --card-glow-border: rgba(var(--color-purple-rgb), 0.18);
+      --card-glow-inner: rgba(var(--color-purple-rgb), 0.08);
+    }
+
+    .card.purple .card-icon-container {
+      background: rgba(var(--color-purple-rgb), 0.08);
+      border: 1px solid rgba(var(--color-purple-rgb), 0.15);
+    }
+
+    .card.purple .card-label {
+      color: var(--color-purple);
+    }
+
+    .card.purple .launch-btn {
+      background: var(--color-purple);
+      --shadow-color: rgba(var(--color-purple-rgb), 0.25);
+    }
+
+    /* FOOTER & DIVIDER */
+    .divider {
+      max-width: 720px;
+      margin: 0 auto 36px;
+      padding: 0 24px;
+    }
+
+    .divider hr {
+      border: none;
+      border-top: 1px solid var(--footer-hr);
+    }
+
+    .footer {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    @media(max-width: 500px) {
+      .footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+    }
+
+    .footer-name {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .footer-name strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .footer-badge {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 100px;
+      background: rgba(var(--color-red-rgb), 0.08);
+      border: 1px solid rgba(var(--color-red-rgb), 0.15);
+      color: var(--color-red);
+      letter-spacing: 0.02em;
+    }
+
+    /* KEYFRAMES FOR TRANSITIONS */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* RESPONSIVE SCALING TWEAKS */
+    @media(max-width: 440px) {
+      .hero {
+        padding: 48px 16px 32px;
+      }
+
+      .grid {
+        padding: 0 16px 48px;
+        gap: 14px;
+      }
+
+      .card-content {
+        padding: 22px 18px;
+      }
+
+      .card-name {
+        font-size: 20px;
+        margin-bottom: 8px;
+      }
+
+      .card-desc {
+        font-size: 13.5px;
+        margin-bottom: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background decorative designs -->
+  <div class="bg-grid-overlay"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- STICKY HEADER -->
+  <header>
+    <div class="header-container">
+      <a class="logo-row" href="#">
+        <span class="logo-letter" style="background:#E8420A">s</span>
+        <span class="logo-letter" style="background:#D4920A">t</span>
+        <span class="logo-letter" style="background:#1E7A45">u</span>
+        <span class="logo-letter" style="background:#E8420A">d</span>
+        <span class="logo-letter" style="background:#D4920A">y</span>
+        <span class="logo-text">tools</span>
+      </a>
+
+      <!-- Dynamic Theme Switcher -->
+      <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
+        <span class="theme-icons">
+          <!-- Moon Icon (Dark Mode) -->
+          <svg viewBox="0 0 24 24" id="icon-moon">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <!-- Sun Icon (Light Mode) -->
+          <svg viewBox="0 0 24 24" id="icon-sun">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="theme-toggle-thumb"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <div class="hero">
+    <div class="badge">
+      <span></span> Built for international students in the UK
+    </div>
+    <h1 class="hero-title">Four premium tools to help you<br><span>study abroad smarter</span></h1>
+    <p class="hero-sub">From finding the right university to understanding the real cost of living. Everything you need
+      as an international student, curated in one place. 100% free, fast, no sign-up needed.</p>
+  </div>
+
+  <!-- TOOL GRID -->
+  <div class="grid">
+
+    <!-- CHUTNEY -->
+    <a class="card red" href="chutney.html">
+      <div class="card-border-glow"></div>
+      <div class="card-inner-glow"></div>
+      <div class="card-content">
+        <div class="card-icon-container">
+          <div class="card-icon">🌶️</div>
+        </div>
+        <div class="card-label">Community</div>
+        <h3 class="card-name">Chutney</h3>
+        <p class="card-desc">Find your people in the UK. Match with student circles based on your interests, home state,
+          and what you're actually looking for.</p>
+        <div class="launch-btn-wrapper">
+          <span class="launch-btn">Launch app <span class="arrow">→</span></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- UNIMATCH AI -->
+    <a class="card blue" href="shortlister.html">
+      <div class="card-border-glow"></div>
+      <div class="card-inner-glow"></div>
+      <div class="card-content">
+        <div class="card-icon-container">
+          <div class="card-icon">🎓</div>
+        </div>
+        <div class="card-label">University Matching</div>
+        <h3 class="card-name">UniMatch AI</h3>
+        <p class="card-desc">Answer 5 questions and get your top 3 UK university matches, with AI-driven personalised
+          reasons why
+          each one fits your profile.</p>
+        <div class="launch-btn-wrapper">
+          <span class="launch-btn">Launch app <span class="arrow">→</span></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- VISAPATH UK -->
+    <a class="card teal" href="visa-timeline.html">
+      <div class="card-border-glow"></div>
+      <div class="card-inner-glow"></div>
+      <div class="card-content">
+        <div class="card-icon-container">
+          <div class="card-icon">🗓️</div>
+        </div>
+        <div class="card-label">Visa Planning</div>
+        <h3 class="card-name">VisaPath UK</h3>
+        <p class="card-desc">Select your country and intake month. Get a month-by-month visa checklist with
+          country-specific deadlines and requirements.</p>
+        <div class="launch-btn-wrapper">
+          <span class="launch-btn">Launch app <span class="arrow">→</span></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- COSTCHECK UK -->
+    <a class="card purple" href="cost-compare.html">
+      <div class="card-border-glow"></div>
+      <div class="card-inner-glow"></div>
+      <div class="card-content">
+        <div class="card-icon-container">
+          <div class="card-icon">💸</div>
+        </div>
+        <div class="card-label">Cost Planning</div>
+        <h3 class="card-name">CostCheck UK</h3>
+        <p class="card-desc">Compare the real cost of student life across any 3 UK cities. Check rent, food, transport
+          and
+          social spending side by side.</p>
+        <div class="launch-btn-wrapper">
+          <span class="launch-btn">Launch app <span class="arrow">→</span></span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="divider">
+    <hr>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-name">Built by <strong>Darren Dias</strong> · MSc Digital Marketing, Royal Holloway · London
+    </div>
+    <div class="footer-badge">🌶️ All tools are free</div>
+  </div>
+
+  <!-- INTERACTION SCRIPTS -->
+  <script>
+    // 1. Dynamic Card Spotlight Mouse Hover Glow Effect
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
+
+    // 2. Light / Dark Theme Switcher with persistence
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const iconSun = document.getElementById('icon-sun');
+    const iconMoon = document.getElementById('icon-moon');
+    const htmlElement = document.documentElement;
+
+    // Load theme from localStorage or system setting
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+
+    setTheme(initialTheme);
+
+    themeToggleBtn.addEventListener('click', () => {
+      const currentTheme = htmlElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+    });
+
+    function setTheme(theme) {
+      htmlElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+
+      if (theme === 'dark') {
+        iconMoon.classList.add('active');
+        iconSun.classList.remove('active');
+      } else {
+        iconSun.classList.add('active');
+        iconMoon.classList.remove('active');
+      }
+    }
+  </script>
+</body>
+
+</html>

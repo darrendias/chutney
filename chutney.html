@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chutney — Find Your Student Circle in the UK</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+
+  <!-- Premium Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    /* RESET & CORE SYSTEM */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* THEME VARIABLES (CREAM & COCOA) */
+    :root[data-theme="light"] {
+      --bg: #FBF9F6;
+      --bg-grid: rgba(138, 120, 102, 0.035);
+      --text: #1C1917;
+      --text-muted: #6B6259;
+      --border: rgba(220, 210, 198, 0.6);
+      --border-glow-default: rgba(220, 210, 198, 0.3);
+      --card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(252, 250, 247, 0.9) 100%);
+      --card-shadow: 0 10px 30px -10px rgba(138, 120, 102, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
+      --card-shadow-hover: 0 20px 45px -12px rgba(138, 120, 102, 0.16), 0 4px 12px rgba(138, 120, 102, 0.04);
+      --header-bg: rgba(251, 249, 246, 0.8);
+      --footer-hr: rgba(220, 210, 198, 0.5);
+
+      /* Accent Colors - Light Theme */
+      --color-red: hsl(14, 95%, 48%);
+      --color-red-rgb: 232, 66, 10;
+      --color-yellow: hsl(38, 92%, 42%);
+      --color-yellow-rgb: 212, 146, 10;
+      --color-green: hsl(150, 68%, 32%);
+      --color-green-rgb: 30, 122, 69;
+      --color-purple: hsl(266, 68%, 48%);
+      --color-purple-rgb: 123, 63, 196;
+      --color-blue: hsl(215, 85%, 46%);
+      --color-blue-rgb: 26, 95, 168;
+      --color-teal: hsl(170, 75%, 26%);
+      --color-teal-rgb: 15, 107, 90;
+
+      --bg-glow-1: rgba(232, 66, 10, 0.04);
+      --bg-glow-2: rgba(123, 63, 196, 0.04);
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0D0B0A;
+      --bg-grid: rgba(255, 255, 255, 0.015);
+      --text: #F9F8F6;
+      --text-muted: #9E938A;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-glow-default: rgba(255, 255, 255, 0.03);
+      --card-bg: linear-gradient(135deg, rgba(23, 20, 19, 0.7) 0%, rgba(15, 13, 12, 0.85) 100%);
+      --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      --card-shadow-hover: 0 25px 50px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      --header-bg: rgba(13, 11, 10, 0.8);
+      --footer-hr: rgba(255, 255, 255, 0.06);
+
+      /* Accent Colors - Dark Theme */
+      --color-red: hsl(14, 95%, 56%);
+      --color-red-rgb: 232, 66, 10;
+      --color-yellow: hsl(38, 92%, 52%);
+      --color-yellow-rgb: 212, 146, 10;
+      --color-green: hsl(152, 70%, 45%);
+      --color-green-rgb: 30, 122, 69;
+      --color-purple: hsl(266, 80%, 66%);
+      --color-purple-rgb: 123, 63, 196;
+      --color-blue: hsl(215, 90%, 60%);
+      --color-blue-rgb: 26, 95, 168;
+      --color-teal: hsl(170, 75%, 44%);
+      --color-teal-rgb: 15, 107, 90;
+
+      --bg-glow-1: rgba(232, 66, 10, 0.07);
+      --bg-glow-2: rgba(123, 63, 196, 0.07);
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* BACKGROUND DESIGN ELEMENTS */
+    .bg-grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.8;
+      will-change: transform;
+    }
+
+    .bg-glow-1 {
+      top: -10%;
+      left: -5%;
+      background: var(--bg-glow-1);
+      animation: floatGlow 18s infinite alternate ease-in-out;
+    }
+
+    .bg-glow-2 {
+      bottom: -10%;
+      right: -5%;
+      background: var(--bg-glow-2);
+      animation: floatGlow 22s infinite alternate-reverse ease-in-out;
+    }
+
+    @keyframes floatGlow {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      100% {
+        transform: translate(50px, 30px) scale(1.1);
+      }
+    }
+
+    /* HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      transition: all 0.3s;
+    }
+
+    .header-container {
+      max-width: 570px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Elevated Study Tools Logo */
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .logo-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      color: #fff;
+      border-radius: 6px;
+      line-height: 1;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .logo-row:hover .logo-letter {
+      transform: translateY(-2px) scale(1.08);
+    }
+
+    .logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-left: 2px;
+    }
+
+    /* Theme Switcher Button */
+    .theme-toggle-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 6px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      width: 58px;
+      height: 32px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .theme-toggle-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--text);
+      position: absolute;
+      left: 5px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-size: 10px;
+    }
+
+    [data-theme="dark"] .theme-toggle-thumb {
+      transform: translateX(26px);
+    }
+
+    .theme-toggle-btn svg {
+      width: 13px;
+      height: 13px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .theme-toggle-btn svg.active {
+      opacity: 1;
+    }
+
+    .theme-icons {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 4px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* APP CONTAINER & CARD STRUCTURE */
+    .app {
+      min-height: calc(100vh - 65px);
+      position: relative;
+      z-index: 10;
+    }
+
+    .inner {
+      max-width: 570px;
+      margin: 0 auto;
+      padding: 44px 20px 80px;
+    }
+
+    /* TYPOGRAPHY */
+    .h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .sub {
+      font-size: 15.5px;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+      line-height: 1.6;
+      animation: fadeInUp 0.4s ease 0.05s both;
+    }
+
+    /* FORM ELEMENTS & INPUTS */
+    .field {
+      margin-bottom: 24px;
+      animation: fadeInUp 0.4s ease 0.1s both;
+    }
+
+    .lbl {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 8px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .inp {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--card-bg);
+      outline: none;
+      font-family: inherit;
+      box-shadow: var(--card-shadow);
+      transition: all 0.3s;
+    }
+
+    .inp:focus {
+      border-color: var(--color-red);
+      box-shadow: 0 0 0 3px rgba(var(--color-red-rgb), 0.12);
+    }
+
+    select.inp {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238A7866' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 18px center;
+      background-size: 16px;
+      padding-right: 48px;
+    }
+
+    /* TACTILE ROW SELECTION BUTTONS */
+    .row-btn {
+      width: 100%;
+      padding: 16px 20px;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: inherit;
+      font-weight: 500;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 10px;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .row-btn:hover {
+      border-color: var(--color-red);
+      transform: translateY(-2px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .row-btn.on {
+      border-color: var(--color-red);
+      background: rgba(var(--color-red-rgb), 0.04);
+      color: var(--color-red);
+      font-weight: 700;
+      box-shadow: 0 8px 24px -8px rgba(var(--color-red-rgb), 0.12);
+    }
+
+    .row-btn.on span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-red);
+      color: #fff;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    /* BUTTONS */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--color-red);
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      font-size: 15.5px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 24px;
+      font-family: inherit;
+      letter-spacing: -0.01em;
+      box-shadow: 0 4px 14px rgba(var(--color-red-rgb), 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.25s, box-shadow 0.25s, opacity 0.2s, filter 0.2s;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(var(--color-red-rgb), 0.35);
+      filter: brightness(1.04);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .btn.ghost {
+      background: none;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      box-shadow: none;
+      margin-top: 12px;
+    }
+
+    .btn.ghost:hover {
+      background: rgba(var(--color-red-rgb), 0.03);
+      border-color: var(--color-red);
+      color: var(--color-red);
+      box-shadow: none;
+    }
+
+    /* CHIP LAYOUT SYSTEM */
+    .section-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 28px 0 10px;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .chip-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .chip {
+      padding: 9px 18px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 13.5px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      font-weight: 500;
+      box-shadow: var(--card-shadow);
+      transition: all 0.2s;
+    }
+
+    .chip:hover {
+      border-color: var(--text-muted);
+      transform: translateY(-1.5px);
+    }
+
+    /* Dynamic Active Chip States */
+    .chip.on {
+      border-color: var(--color-red);
+      background: rgba(var(--color-red-rgb), 0.05);
+      color: var(--color-red);
+      font-weight: 700;
+      box-shadow: 0 6px 16px -6px rgba(var(--color-red-rgb), 0.16);
+    }
+
+    .chip.on.grn {
+      border-color: var(--color-green);
+      background: rgba(var(--color-green-rgb), 0.05);
+      color: var(--color-green);
+      box-shadow: 0 6px 16px -6px rgba(var(--color-green-rgb), 0.16);
+    }
+
+    .chip.on.pur {
+      border-color: var(--color-purple);
+      background: rgba(var(--color-purple-rgb), 0.05);
+      color: var(--color-purple);
+      box-shadow: 0 6px 16px -6px rgba(var(--color-purple-rgb), 0.16);
+    }
+
+    /* STEP DOTS INDICATOR */
+    .dots {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 32px;
+      animation: fadeInDown 0.4s ease both;
+    }
+
+    .dot {
+      height: 6px;
+      border-radius: 100px;
+      background: var(--border);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .dot.act {
+      background: linear-gradient(135deg, var(--color-red) 0%, var(--color-yellow) 100%);
+      box-shadow: 0 2px 8px rgba(var(--color-red-rgb), 0.25);
+    }
+
+    /* CHUTNEY LOGO SQUIRCLES (STEP 0) */
+    .logo-row-chutney {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .logo-letter-chutney {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: #fff;
+      border-radius: 12px;
+      line-height: 1;
+      text-transform: uppercase;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: floatLetters 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    }
+
+    .logo-letter-chutney:hover {
+      transform: translateY(-4px) scale(1.1) rotate(5deg);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    @keyframes floatLetters {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.85);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* STATS DESIGN */
+    .stat-row {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin: 40px auto 44px;
+      max-width: 480px;
+      animation: fadeInUp 0.5s ease 0.15s both;
+    }
+
+    .stat {
+      flex: 1;
+      text-align: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px 12px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s;
+    }
+
+    .stat:hover {
+      transform: translateY(-2px);
+      border-color: var(--text-muted);
+    }
+
+    .stat-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    .stat-lbl {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    /* MATCH CARD DESIGN SYSTEM */
+    .card {
+      position: relative;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 20px;
+      padding: 1px;
+      /* border-glow allowance */
+      animation: fadeInUp 0.4s ease both;
+      /* Mouse glow binding hooks */
+      --mouse-x: 0px;
+      --mouse-y: 0px;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .card-border-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: radial-gradient(300px circle at var(--mouse-x) var(--mouse-y), var(--card-glow-border, transparent), transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .card-inner-glow {
+      position: absolute;
+      inset: 1px;
+      border-radius: 23px;
+      background: radial-gradient(350px circle at var(--mouse-x) var(--mouse-y), var(--card-glow-inner, transparent), transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .card:hover .card-border-glow,
+    .card:hover .card-inner-glow {
+      opacity: 1;
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 2;
+      background: var(--card-bg);
+      border-radius: 23px;
+      padding: 24px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .cname {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .cdesc {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .cmeta {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .card-icon-container {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-left: 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .card:hover .card-icon-container {
+      transform: scale(1.08) rotate(5deg);
+    }
+
+    .card-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    /* JOIN / INTERACTIVE BUTTON IN MATCH CARDS */
+    .jbtn {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 100px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: auto;
+      transition: transform 0.2s, filter 0.2s, box-shadow 0.2s;
+    }
+
+    .jbtn:hover {
+      transform: translateY(-1.5px);
+      filter: brightness(1.05);
+    }
+
+    /* MATCH OUTCOME CTA BOX */
+    .cta-box {
+      border-radius: 24px;
+      padding: 32px 24px;
+      text-align: center;
+      margin-top: 28px;
+      border: 2px dashed var(--border);
+      background: rgba(var(--color-red-rgb), 0.015);
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .back-link {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      display: block;
+      margin: 24px auto 0;
+      font-family: inherit;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--color-red);
+    }
+
+    /* KEYFRAMES FOR TRANSITIONS */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* RESPONSIVE SCALING TWEAKS */
+    @media(max-width: 480px) {
+      .stat-row {
+        gap: 10px;
+        margin: 28px auto 32px;
+      }
+
+      .stat {
+        padding: 14px 8px;
+        border-radius: 16px;
+      }
+
+      .stat-num {
+        font-size: 20px;
+      }
+
+      .stat-lbl {
+        font-size: 10.5px;
+      }
+    }
+
+    @media(max-width: 440px) {
+      .card-content {
+        padding: 20px 18px;
+      }
+
+      .cmeta {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+
+      .jbtn {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        display: flex;
+        padding: 12px;
+      }
+    }
+
+    @media(max-width: 400px) {
+      .logo-letter-chutney {
+        width: 32px;
+        height: 32px;
+        font-size: 15px;
+        border-radius: 8px;
+      }
+
+      .logo-row-chutney {
+        gap: 4px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background decorative designs -->
+  <div class="bg-grid-overlay"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- STICKY HEADER -->
+  <header>
+    <div class="header-container">
+      <a class="logo-row" href="index.html">
+        <span class="logo-letter" style="background:#E8420A">s</span>
+        <span class="logo-letter" style="background:#D4920A">t</span>
+        <span class="logo-letter" style="background:#1E7A45">u</span>
+        <span class="logo-letter" style="background:#E8420A">d</span>
+        <span class="logo-letter" style="background:#D4920A">y</span>
+        <span class="logo-text">tools</span>
+      </a>
+
+      <!-- Dynamic Theme Switcher -->
+      <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
+        <span class="theme-icons">
+          <!-- Moon Icon (Dark Mode) -->
+          <svg viewBox="0 0 24 24" id="icon-moon">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <!-- Sun Icon (Light Mode) -->
+          <svg viewBox="0 0 24 24" id="icon-sun">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="theme-toggle-thumb"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- COMMUNITY FINDER APP CONTAINER -->
+  <div class="app">
+    <div class="inner" id="screen"></div>
+  </div>
+
+  <!-- QUESTIONNAIRE ENGINE & LOGIC -->
+  <script>
+    const R = "#E8420A", Y = "#D4920A", G = "#1E7A45", P = "#7B3FC4", B = "#1A5FA8", TL = "#0F6B5A";
+    const LETTER_COLORS = [R, Y, G, R, Y, G, R];
+
+    const UNIS = ["UCL", "King's College London", "Imperial College London", "LSE", "Queen Mary University London", "Brunel University London", "Royal Holloway", "University of Westminster", "City, University of London", "Goldsmiths", "SOAS", "University of East London", "Middlesex University", "University of Greenwich", "Other UK University"];
+
+    const STATES = ["Andhra Pradesh", "Assam", "Bihar", "Chhattisgarh", "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Other Indian Territory", "Not from India / Other country"];
+
+    const AREAS = ["North London", "South London", "East London", "West London", "Central London", "Outside London"];
+
+    const INT_SECTIONS = [
+      { label: "Sports & Fitness", items: ["Football", "Cricket", "Badminton", "Tennis", "Basketball", "Swimming", "Running & Marathons", "Volleyball", "Gym & Fitness", "Yoga & Meditation"] },
+      { label: "Social & Community", items: ["Board Games", "Bollywood & Desi Nights", "Concerts & Live Gigs", "BuddyUp — Find Activity Partners", "Buy & Sell Marketplace", "Cooking & Food", "Desi Weddings & Events", "Mental Health & Wellness"] },
+      { label: "Creative & Culture", items: ["Photography", "Music & Jamming", "Art & Design", "Film & Cinema", "Poetry & Writing", "Content Creation", "Language Exchange"] },
+      { label: "Career & Learning", items: ["Tech & Coding", "Entrepreneurship", "Career Networking", "Study Groups", "Gaming & Esports", "Debate & Public Speaking"] },
+      { label: "Explore", items: ["UK Travel", "Hiking & Outdoors", "Street Food Hunts", "Volunteering"] },
+    ];
+
+    const ALL_INTS = INT_SECTIONS.flatMap(s => s.items);
+
+    const GOALS = ["Make genuine friends", "Find study partners", "Build my career network", "Explore the UK", "Join a sports team", "Attend social events", "Get career guidance", "Find a mentor", "Buy or sell stuff", "Find an activity partner"];
+
+    const GROUPS = [
+      { id: "ft", name: "Sunday Football", emoji: "⚽", it: ["Football"], gt: ["Join a sports team", "Make genuine friends"], members: 32, event: "5-a-side @ Hackney · May 25", desc: "Casual 5-a-side to competitive 11s. Any skill. Play, then eat somewhere good.", c: G, l: "#E6F4ED" },
+      { id: "cr", name: "Cricket Sundays", emoji: "🏏", it: ["Cricket"], gt: ["Join a sports team", "Make genuine friends"], members: 19, event: "Net Practice · Wembley · Jun 1", desc: "Weekend cricket for all levels — competitive matches and casual net sessions.", c: TL, l: "#E6F2EF" },
+      { id: "bg", name: "Board Game Café Nights", emoji: "🎲", it: ["Board Games"], gt: ["Make genuine friends", "Attend social events"], members: 28, event: "Draughts Café · May 28", desc: "Catan, Codenames, Ticket to Ride. Relaxed evenings at London's best cafés.", c: P, l: "#F2EAFA" },
+      { id: "bo", name: "Bollywood & Desi Nights", emoji: "💃", it: ["Bollywood & Desi Nights", "Cooking & Food"], gt: ["Make genuine friends", "Attend social events"], members: 61, event: "Desi Night @ Shoreditch · May 30", desc: "Dance nights, food crawls, Diwali, Holi. The best of South Asian culture in London.", c: R, l: "#FEF0EB" },
+      { id: "tc", name: "Tech & Career Circle", emoji: "💼", it: ["Tech & Coding", "Career Networking", "Entrepreneurship"], gt: ["Build my career network", "Get career guidance", "Find a mentor"], members: 54, event: "CV Workshop · May 27", desc: "Job apps, mock interviews, LinkedIn tips, company visits. Built for international grads.", c: B, l: "#E6F0FB" },
+      { id: "sp", name: "Study Pods", emoji: "📚", it: ["Study Groups"], gt: ["Find study partners"], members: 39, event: "Daily · Various Libraries", desc: "Accountability partners, group revision, matched by course type.", c: Y, l: "#FEF8E7" },
+      { id: "pw", name: "London Photo Walks", emoji: "📸", it: ["Photography"], gt: ["Explore the UK", "Make genuine friends"], members: 23, event: "Southbank Walk · Jun 2", desc: "Explore London's neighbourhoods through a lens. All cameras, zero pretension.", c: P, l: "#F2EAFA" },
+      { id: "co", name: "Concerts & Gigs Club", emoji: "🎤", it: ["Concerts & Live Gigs", "Music & Jamming"], gt: ["Make genuine friends", "Attend social events"], members: 44, event: "Gig Night · Brixton Academy · Jun 5", desc: "Group tickets, last-minute gig buddies, discovering new artists together.", c: R, l: "#FEF0EB" },
+      { id: "bu", name: "BuddyUp Hub", emoji: "🤝", it: ["BuddyUp — Find Activity Partners"], gt: ["Find an activity partner", "Make genuine friends"], members: 67, event: "Rolling · Post daily requests", desc: "Flying solo to a concert? Need a gym partner? Post it here. Someone will show up.", c: G, l: "#E6F4ED" },
+      { id: "mk", name: "Chutney Marketplace", emoji: "🛍️", it: ["Buy & Sell Marketplace"], gt: ["Buy or sell stuff"], members: 89, event: "Active daily · WhatsApp + meetups", desc: "Student-only buy & sell. Textbooks, furniture, appliances, clothes. Safe and local.", c: Y, l: "#FEF8E7" },
+      { id: "gm", name: "Gaming & Esports", emoji: "🎮", it: ["Gaming & Esports", "Tech & Coding"], gt: ["Make genuine friends", "Attend social events"], members: 36, event: "LAN Party · Stratford · Jun 7", desc: "FIFA tourneys, valorant squads, LAN parties and indie game nights.", c: P, l: "#F2EAFA" },
+      { id: "wl", name: "Wellness Circle", emoji: "🌿", it: ["Mental Health & Wellness", "Yoga & Meditation"], gt: ["Make genuine friends", "Attend social events"], members: 31, event: "Sunday Yoga · Hyde Park · May 25", desc: "Mental health check-ins, yoga sessions, meditation. No toxic positivity — just real support.", c: TL, l: "#E6F2EF" },
+      { id: "rn", name: "Running Club", emoji: "🏃", it: ["Running & Marathons", "Gym & Fitness"], gt: ["Join a sports team", "Make genuine friends"], members: 28, event: "Parkrun · Victoria Park · Sat 9am", desc: "Weekly parkruns, marathon training groups, casual jogs. All paces welcome.", c: G, l: "#E6F4ED" },
+      { id: "fd", name: "Desi Foodies", emoji: "🍛", it: ["Cooking & Food", "Street Food Hunts"], gt: ["Make genuine friends", "Attend social events"], members: 52, event: "Southall Food Tour · May 31", desc: "Restaurant hunts, home cooking meetups, honest reviews of every desi spot in London.", c: R, l: "#FEF0EB" },
+      { id: "fx", name: "Language Exchange", emoji: "🗣️", it: ["Language Exchange"], gt: ["Make genuine friends", "Explore the UK"], members: 25, event: "Weekly · Central London Cafés", desc: "Swap languages over coffee. Hindi, Tamil, Bengali, Telugu — and help with English too.", c: B, l: "#E6F0FB" },
+      { id: "tr", name: "UK Weekend Trips", emoji: "🗺️", it: ["UK Travel", "Hiking & Outdoors"], gt: ["Explore the UK", "Make genuine friends"], members: 47, event: "Peak District · Jun 1", desc: "Cotswolds, Lake District, Edinburgh. Group trips with people who actually show up.", c: TL, l: "#E6F2EF" },
+      { id: "fb", name: "Founders & Builders", emoji: "🚀", it: ["Entrepreneurship", "Tech & Coding"], gt: ["Build my career network", "Find a mentor"], members: 17, event: "Pitch Night · May 29", desc: "Building something? Find co-founders, share ideas, get feedback from people who get it.", c: R, l: "#FEF0EB" },
+      { id: "cc", name: "Content Creators", emoji: "🎬", it: ["Content Creation", "Photography"], gt: ["Make genuine friends", "Build my career network"], members: 21, event: "Collab Day · East London · Jun 4", desc: "YouTube, Instagram, TikTok — grow together. Collabs, shoots, editing tips.", c: Y, l: "#FEF8E7" },
+    ];
+
+    // Helper: translate hardcoded group colors (R, Y, G, P, B, TL) to theme CSS property targets
+    function getGroupTheme(cHex) {
+      if (cHex === R) return { c: 'var(--color-red)', rgb: 'var(--color-red-rgb)', bg: 'rgba(var(--color-red-rgb), 0.08)', b: 'rgba(var(--color-red-rgb), 0.16)' };
+      if (cHex === Y) return { c: 'var(--color-yellow)', rgb: 'var(--color-yellow-rgb)', bg: 'rgba(var(--color-yellow-rgb), 0.08)', b: 'rgba(var(--color-yellow-rgb), 0.16)' };
+      if (cHex === G) return { c: 'var(--color-green)', rgb: 'var(--color-green-rgb)', bg: 'rgba(var(--color-green-rgb), 0.08)', b: 'rgba(var(--color-green-rgb), 0.16)' };
+      if (cHex === P) return { c: 'var(--color-purple)', rgb: 'var(--color-purple-rgb)', bg: 'rgba(var(--color-purple-rgb), 0.08)', b: 'rgba(var(--color-purple-rgb), 0.16)' };
+      if (cHex === B) return { c: 'var(--color-blue)', rgb: 'var(--color-blue-rgb)', bg: 'rgba(var(--color-blue-rgb), 0.08)', b: 'rgba(var(--color-blue-rgb), 0.16)' };
+      if (cHex === TL) return { c: 'var(--color-teal)', rgb: 'var(--color-teal-rgb)', bg: 'rgba(var(--color-teal-rgb), 0.08)', b: 'rgba(var(--color-teal-rgb), 0.16)' };
+      return { c: 'var(--text-muted)', rgb: '128,128,128', bg: 'rgba(128,128,128,0.08)', b: 'rgba(128,128,128,0.16)' };
+    }
+
+    function getMatches(ints, goals) {
+      return GROUPS.map(g => {
+        let sc = 0;
+        ints.forEach(i => { if (g.it.includes(i)) sc += 3; });
+        goals.forEach(gl => { if (g.gt.includes(gl)) sc += 2; });
+        return { ...g, sc, pct: Math.min(98, 48 + sc * 5) };
+      }).sort((a, b) => b.sc - a.sc).slice(0, 6);
+    }
+
+    let st = { step: 0, name: "", uni: "", homeState: "", area: "", ints: [], goals: [] };
+
+    function logoHTML() {
+      const letters = "chutney".split('');
+      return `<div class="logo-row-chutney">
+        ${letters.map((l, i) => `<span class="logo-letter-chutney" style="background:${LETTER_COLORS[i]}; animation-delay: ${i * 0.08}s">${l}</span>`).join('')}
+      </div>`;
+    }
+
+    function dots(cur) {
+      return `<div class="dots">${[0, 1, 2, 3, 4].map(i => `<div class="dot${i <= cur ? ' act' : ''}" style="width:${i === cur ? 28 : 8}px"></div>`).join('')}</div>`;
+    }
+
+    // Dynamic Card Spotlight Mouse Hover Glow Init
+    function initCardGlows() {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          card.style.setProperty('--mouse-x', `${x}px`);
+          card.style.setProperty('--mouse-y', `${y}px`);
+        });
+      });
+    }
+
+    function render() {
+      const el = document.getElementById('screen');
+      const s = st;
+
+      if (s.step === 0) {
+        el.innerHTML = `<div style="text-align:center;padding-top:24px; animation: fadeInUp 0.5s ease both;">
+          <div style="margin-bottom:24px">${logoHTML()}</div>
+          <div style="font-family:'Outfit', sans-serif; font-size:15px;color:var(--color-red);font-weight:800;margin-bottom:18px;letter-spacing:.08em;text-transform:uppercase;">🌶️ Spice up your UK life</div>
+          <p style="font-size:16px;color:var(--text-muted);max-width:440px;margin:0 auto 36px;line-height:1.7">For international students who want more than just <em>study</em>. Real friendships, career wins, and circles that actually get you.</p>
+          
+          <div class="stat-row">
+            <div class="stat"><div class="stat-num">600+</div><div class="stat-lbl">students</div></div>
+            <div class="stat"><div class="stat-num">40+</div><div class="stat-lbl">circles</div></div>
+            <div class="stat"><div class="stat-num" style="color:var(--color-red)">🌶️</div><div class="stat-lbl">no bland vibes</div></div>
+          </div>
+          
+          <button class="btn" style="max-width:280px;display:flex;margin:0 auto" onclick="go(1)">Get started →</button>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:14px;font-weight:500">2 minutes · no login needed</p>
+        </div>`;
+      }
+
+      else if (s.step === 1) {
+        el.innerHTML = `${dots(0)}
+          <h2 class="h1">Let's set up your profile</h2>
+          <p class="sub">Quick basics so we can find the right circles.</p>
+          
+          <div class="field">
+            <label class="lbl">Your name</label>
+            <input class="inp" id="nm" placeholder="What should we call you?" value="${s.name}" oninput="st.name=this.value;checkBtn('s1b',()=>st.name.trim()&&st.uni)">
+          </div>
+          
+          <div class="field">
+            <label class="lbl">Your university</label>
+            <select class="inp" onchange="st.uni=this.value;checkBtn('s1b',()=>st.name.trim()&&st.uni)">
+              <option value="">Select your university...</option>
+              ${UNIS.map(u => `<option${s.uni === u ? ' selected' : ''}>${u}</option>`).join('')}
+            </select>
+          </div>
+          
+          <button class="btn" id="s1b" onclick="go(2)" ${!s.name.trim() || !s.uni ? 'disabled' : ''}>Continue →</button>`;
+
+        // Re-validate fields inside screen when entering step 1
+        const inputName = document.getElementById('nm');
+        if (inputName) {
+          inputName.focus();
+        }
+      }
+
+      else if (s.step === 2) {
+        el.innerHTML = `${dots(1)}
+          <h2 class="h1">Where in London are you?</h2>
+          <p class="sub">We'll suggest nearby events and meetups in your area.</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            ${AREAS.map((a, idx) => `<button class="row-btn${s.area === a ? ' on' : ''}" style="animation-delay: ${idx * 0.05}s" onclick="st.area='${a}';go(3)">
+              ${a}
+              ${s.area === a ? '<span>✓</span>' : ''}
+            </button>`).join('')}
+          </div>`;
+      }
+
+      else if (s.step === 3) {
+        el.innerHTML = `${dots(2)}
+          <h2 class="h1">Where are you from?</h2>
+          <p class="sub">Help us connect you with people from home — and help you bond with others who get the references.</p>
+          
+          <div class="field">
+            <label class="lbl">State / Region from India</label>
+            <select class="inp" onchange="st.homeState=this.value;checkBtn('s3b',()=>st.homeState)">
+              <option value="">Select your home state...</option>
+              ${STATES.map(s2 => `<option${st.homeState === s2 ? ' selected' : ''}>${s2}</option>`).join('')}
+            </select>
+          </div>
+          
+          <button class="btn" id="s3b" onclick="go(4)" ${!s.homeState ? 'disabled' : ''}>Continue →</button>`;
+      }
+
+      else if (s.step === 4) {
+        const selected = s.ints;
+        el.innerHTML = `${dots(3)}
+          <h2 class="h1">What are you into?</h2>
+          <p class="sub">Pick at least 4. The more you pick, the better your matches.</p>
+          ${INT_SECTIONS.map((sec, idx) => {
+          // Dynamic chip color styling depending on Category
+          const isRedCat = sec.label.includes("Sports") || sec.label.includes("Social");
+          const isGreenCat = sec.label.includes("Creative") || sec.label.includes("Explore");
+          const colorClass = isRedCat ? "" : (isGreenCat ? " grn" : " pur");
+
+          return `
+              <div class="section-label" style="animation-delay: ${idx * 0.05}s">${sec.label}</div>
+              <div class="chip-wrap" style="margin-bottom:8px; animation-delay: ${idx * 0.05}s">
+                ${sec.items.map(i => `<button class="chip${selected.includes(i) ? ' on' + colorClass : ''}" onclick="toggleInt('${i.replace(/'/g, "\\'")}')">
+                  ${i}
+                </button>`).join('')}
+              </div>`;
+        }).join('')}
+          
+          <div id="icnt" style="font-size:14px; margin-top:28px; padding:12px 18px; border-radius:12px; display:inline-block; transition: all 0.3s;
+            ${selected.length >= 4 ? 'background:rgba(var(--color-green-rgb), 0.06); border:1px solid rgba(var(--color-green-rgb), 0.15); color:var(--color-green); font-weight:700;'
+            : 'background:var(--border); color:var(--text-muted);'}">
+            ${selected.length} selected ${selected.length >= 4 ? '✓ Ready to continue!' : `— pick ${4 - selected.length} more to continue`}
+          </div>
+          
+          <button class="btn" id="s4b" onclick="go(5)" ${selected.length < 4 ? 'disabled' : ''}>Continue →</button>`;
+      }
+
+      else if (s.step === 5) {
+        el.innerHTML = `${dots(4)}
+          <h2 class="h1">What are you looking for?</h2>
+          <p class="sub">Pick everything that feels true. No wrong answers here.</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            ${GOALS.map((g, idx) => `<button class="row-btn${s.goals.includes(g) ? ' on' : ''}" style="animation-delay: ${idx * 0.05}s" onclick="toggleGoal('${g.replace(/'/g, "\\'")}')">
+              ${g}
+              ${s.goals.includes(g) ? '<span>✓</span>' : ''}
+            </button>`).join('')}
+          </div>
+          <button class="btn" id="s5b" onclick="doMatch()" ${s.goals.length === 0 ? 'disabled' : ''}>Find my circles 🌶️</button>`;
+      }
+
+      else if (s.step === 6) {
+        const matches = getMatches(s.ints, s.goals);
+        const stateTag = s.homeState && s.homeState !== "Not from India / Other country" ?
+          `<span style="background:rgba(var(--color-red-rgb),0.06); border:1px solid rgba(var(--color-red-rgb),0.15); color:var(--color-red); font-size:12px; font-weight:800; padding:4px 10px; border-radius:100px; margin-left:6px">${s.homeState}</span>` :
+          `<span style="background:rgba(var(--color-blue-rgb),0.06); border:1px solid rgba(var(--color-blue-rgb),0.15); color:var(--color-blue); font-size:12px; font-weight:800; padding:4px 10px; border-radius:100px; margin-left:6px">${s.homeState || ''}</span>`;
+
+        const cardsHTML = matches.map((g, idx) => {
+          const themeColors = getGroupTheme(g.c);
+          const lbl = g.pct >= 90 ? "Top match" : g.pct >= 75 ? "Great match" : "Good match";
+          const isTop = idx === 0;
+
+          return `<div class="card" ${isTop ? `style="border-color:${themeColors.c}; border-width:1.5px; --card-glow-border: rgba(${themeColors.rgb}, 0.22); --card-glow-inner: rgba(${themeColors.rgb}, 0.1);"` : `style="--card-glow-border: rgba(${themeColors.rgb}, 0.18); --card-glow-inner: rgba(${themeColors.rgb}, 0.08);"`}>
+            <div class="card-border-glow"></div>
+            <div class="card-inner-glow"></div>
+            <div class="card-content">
+              ${isTop ? `<div style="font-family:'Outfit', sans-serif; font-size:11px; font-weight:800; color:${themeColors.c}; margin-bottom:12px; text-transform:uppercase; letter-spacing:.08em">⭐ Your #1 Pick</div>` : ''}
+              <div class="card-top">
+                <div style="flex:1">
+                  <span class="tag" style="background:${themeColors.bg}; border: 1px solid ${themeColors.b}; color:${themeColors.c}">${lbl} · ${g.pct}%</span>
+                  <div class="cname">${g.name}</div>
+                </div>
+                <div class="card-icon-container" style="background:${themeColors.bg}; border: 1px solid ${themeColors.b};">
+                  <div class="card-icon">${g.emoji}</div>
+                </div>
+              </div>
+              <p class="cdesc">${g.desc}</p>
+              <div class="cmeta">
+                <span>👥 ${g.members} members</span>
+                <span>📅 ${g.event}</span>
+                <button class="jbtn" style="background:${themeColors.c}; box-shadow: 0 4px 12px rgba(${themeColors.rgb}, 0.2);" onclick="this.textContent='Joined! 🎉'; this.style.background='var(--color-green)'; this.style.boxShadow='0 4px 12px rgba(30,122,69,0.2)'">Join Circle</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+
+        el.innerHTML = `
+          <div style="text-align:center;margin-bottom:36px; animation: fadeInUp 0.4s ease both;">
+            <div style="margin-bottom:18px">${logoHTML()}</div>
+            <h2 class="h1" style="font-size:24px">Hey ${s.name || 'there'}, your circles are ready 🎉</h2>
+            <p style="font-size:14px;color:var(--text-muted);font-weight:600;margin-top:8px">${s.uni} · ${s.area}${s.homeState ? ` · ${stateTag}` : ''}</p>
+          </div>
+          
+          <div style="animation: fadeInUp 0.5s ease both;">
+            ${cardsHTML}
+          </div>
+          
+          <div class="cta-box">
+            <div style="font-family:'Outfit', sans-serif; font-size:18px; font-weight:800; color:var(--text); margin-bottom:8px">See all 40+ circles on Chutney</div>
+            <div style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:20px; max-width: 420px; margin-left: auto; margin-right: auto;">Browse every community, RSVP to events, DM members, post BuddyUp requests.</div>
+            <button class="btn" style="max-width:240px; display:flex; margin:0 auto" onclick="alert('Coming soon! 🌶️')">Create free account</button>
+          </div>
+          
+          <button class="back-link" onclick="reset()">Start over</button>`;
+
+        // Re-initialize dynamic spotlights on freshly rendered match cards
+        initCardGlows();
+      }
+    }
+
+    function go(n) { st.step = n; render(); }
+    function checkBtn(id, fn) { const b = document.getElementById(id); if (b) b.disabled = !fn(); }
+    function toggleInt(i) {
+      st.ints = st.ints.includes(i) ? st.ints.filter(x => x !== i) : [...st.ints, i];
+      render();
+    }
+    function toggleGoal(g) {
+      st.goals = st.goals.includes(g) ? st.goals.filter(x => x !== g) : [...st.goals, g];
+      render();
+    }
+    function doMatch() { st.step = 6; render(); }
+    function reset() { st = { step: 0, name: "", uni: "", homeState: "", area: "", ints: [], goals: [] }; render(); }
+
+    // INITIAL LOAD
+    render();
+
+    // DYNAMIC LIGHT / DARK THEME SYSTEM
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const iconSun = document.getElementById('icon-sun');
+    const iconMoon = document.getElementById('icon-moon');
+    const htmlElement = document.documentElement;
+
+    // Load theme from localStorage or system preference
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+
+    setTheme(initialTheme);
+
+    themeToggleBtn.addEventListener('click', () => {
+      const currentTheme = htmlElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+    });
+
+    function setTheme(theme) {
+      htmlElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+
+      if (theme === 'dark') {
+        iconMoon.classList.add('active');
+        iconSun.classList.remove('active');
+      } else {
+        iconSun.classList.add('active');
+        iconMoon.classList.remove('active');
+      }
+    }
+  </script>
+</body>
+
+</html>

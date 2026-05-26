@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CostCheck UK — Study Abroad Cost Comparator</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+
+  <!-- Premium Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    /* RESET & CORE SYSTEM */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* THEME VARIABLES (CREAM & COCOA) */
+    :root[data-theme="light"] {
+      --bg: #FBF9F6;
+      --bg-grid: rgba(138, 120, 102, 0.035);
+      --text: #1C1917;
+      --text-muted: #6B6259;
+      --border: rgba(220, 210, 198, 0.6);
+      --border-glow-default: rgba(220, 210, 198, 0.3);
+      --card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(252, 250, 247, 0.9) 100%);
+      --card-shadow: 0 10px 30px -10px rgba(138, 120, 102, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
+      --card-shadow-hover: 0 20px 45px -12px rgba(138, 120, 102, 0.16), 0 4px 12px rgba(138, 120, 102, 0.04);
+      --header-bg: rgba(251, 249, 246, 0.8);
+      --footer-hr: rgba(220, 210, 198, 0.5);
+
+      /* Accent Colors - Light Theme */
+      --color-red: hsl(14, 95%, 48%);
+      --color-red-rgb: 232, 66, 10;
+      --color-yellow: hsl(38, 92%, 42%);
+      --color-yellow-rgb: 212, 146, 10;
+      --color-green: hsl(150, 68%, 32%);
+      --color-green-rgb: 30, 122, 69;
+      --color-purple: hsl(266, 68%, 48%);
+      --color-purple-rgb: 123, 63, 196;
+      --color-blue: hsl(215, 85%, 46%);
+      --color-blue-rgb: 26, 95, 168;
+      --color-teal: hsl(170, 75%, 26%);
+      --color-teal-rgb: 15, 107, 90;
+
+      --bg-glow-1: rgba(232, 66, 10, 0.04);
+      --bg-glow-2: rgba(123, 63, 196, 0.04);
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0D0B0A;
+      --bg-grid: rgba(255, 255, 255, 0.015);
+      --text: #F9F8F6;
+      --text-muted: #9E938A;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-glow-default: rgba(255, 255, 255, 0.03);
+      --card-bg: linear-gradient(135deg, rgba(23, 20, 19, 0.7) 0%, rgba(15, 13, 12, 0.85) 100%);
+      --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      --card-shadow-hover: 0 25px 50px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      --header-bg: rgba(13, 11, 10, 0.8);
+      --footer-hr: rgba(255, 255, 255, 0.06);
+
+      /* Accent Colors - Dark Theme */
+      --color-red: hsl(14, 95%, 56%);
+      --color-red-rgb: 232, 66, 10;
+      --color-yellow: hsl(38, 92%, 52%);
+      --color-yellow-rgb: 212, 146, 10;
+      --color-green: hsl(152, 70%, 45%);
+      --color-green-rgb: 30, 122, 69;
+      --color-purple: hsl(266, 80%, 66%);
+      --color-purple-rgb: 123, 63, 196;
+      --color-blue: hsl(215, 90%, 60%);
+      --color-blue-rgb: 26, 95, 168;
+      --color-teal: hsl(170, 75%, 44%);
+      --color-teal-rgb: 15, 107, 90;
+
+      --bg-glow-1: rgba(232, 66, 10, 0.07);
+      --bg-glow-2: rgba(123, 63, 196, 0.07);
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* BACKGROUND DESIGN ELEMENTS */
+    .bg-grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.8;
+      will-change: transform;
+    }
+
+    .bg-glow-1 {
+      top: -10%;
+      left: -5%;
+      background: var(--bg-glow-1);
+      animation: floatGlow 18s infinite alternate ease-in-out;
+    }
+
+    .bg-glow-2 {
+      bottom: -10%;
+      right: -5%;
+      background: var(--bg-glow-2);
+      animation: floatGlow 22s infinite alternate-reverse ease-in-out;
+    }
+
+    @keyframes floatGlow {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      100% {
+        transform: translate(50px, 30px) scale(1.1);
+      }
+    }
+
+    /* HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      transition: all 0.3s;
+    }
+
+    .header-container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Elevated Study Tools Logo */
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .logo-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      color: #fff;
+      border-radius: 6px;
+      line-height: 1;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .logo-row:hover .logo-letter {
+      transform: translateY(-2px) scale(1.08);
+    }
+
+    .logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-left: 2px;
+    }
+
+    /* Theme Switcher Button */
+    .theme-toggle-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 6px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      width: 58px;
+      height: 32px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .theme-toggle-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--text);
+      position: absolute;
+      left: 5px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-size: 10px;
+    }
+
+    [data-theme="dark"] .theme-toggle-thumb {
+      transform: translateX(26px);
+    }
+
+    .theme-toggle-btn svg {
+      width: 13px;
+      height: 13px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .theme-toggle-btn svg.active {
+      opacity: 1;
+    }
+
+    .theme-icons {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 4px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* WRAPPER CONTAINERS */
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 44px 20px 80px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* BRAND LOGO & TAGLINE ON SCREEN */
+    .app-brand {
+      margin-bottom: 32px;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .logo {
+      font-family: 'Outfit', sans-serif;
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--color-purple);
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tagline {
+      font-size: 15px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* TYPOGRAPHY */
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .sub {
+      font-size: 15.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .lbl {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* CITY GRID PICKER */
+    .city-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+      animation: fadeInUp 0.4s ease 0.1s both;
+    }
+
+    @media(max-width: 600px) {
+      .city-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media(max-width: 440px) {
+      .city-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Selector Cards */
+    .cc {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 16px 12px;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .cc:hover {
+      border-color: var(--color-purple);
+      transform: translateY(-3px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .cc.on {
+      border-color: var(--color-purple);
+      background: rgba(var(--color-purple-rgb), 0.05);
+      box-shadow: 0 8px 24px -6px rgba(var(--color-purple-rgb), 0.18);
+    }
+
+    .cc.on .cn {
+      color: var(--color-purple);
+      font-weight: 800;
+    }
+
+    .ci {
+      font-size: 26px;
+      margin-bottom: 6px;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .cc:hover .ci {
+      transform: scale(1.15) rotate(4deg);
+    }
+
+    .cn {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* SELECT DROPDOWNS */
+    select {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--card-bg);
+      outline: none;
+      margin-bottom: 28px;
+      box-shadow: var(--card-shadow);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238A7866' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 18px center;
+      background-size: 16px;
+      padding-right: 48px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      animation: fadeInUp 0.4s ease 0.15s both;
+    }
+
+    select:focus {
+      border-color: var(--color-purple);
+      box-shadow: 0 0 0 3px rgba(var(--color-purple-rgb), 0.12);
+    }
+
+    /* LAUNCH BUTTONS */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--color-purple);
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 4px 14px rgba(var(--color-purple-rgb), 0.25);
+      transition: transform 0.25s, box-shadow 0.25s, opacity 0.2s, filter 0.2s;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(var(--color-purple-rgb), 0.35);
+      filter: brightness(1.04);
+    }
+
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .btn.ghost {
+      background: none;
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      box-shadow: none;
+      font-weight: 700;
+      margin-top: 16px;
+    }
+
+    .btn.ghost:hover {
+      background: rgba(var(--color-purple-rgb), 0.03);
+      border-color: var(--color-purple);
+      color: var(--color-purple);
+    }
+
+    /* COMPARISON MATRIX GRID SYSTEM */
+    .comparison-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      margin-bottom: 28px;
+      animation: fadeInUp 0.5s ease both;
+    }
+
+    .table-scroll-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+    }
+
+    .comparison-table {
+      min-width: 580px;
+      /* locks sizing structure on mobile scroll layouts */
+      padding: 10px 12px;
+    }
+
+    /* Column Headers & Cities */
+    .col-heads {
+      display: grid;
+      gap: 12px;
+      padding: 16px 14px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+
+    .row-header-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .col-h {
+      border-radius: 16px;
+      padding: 16px 12px;
+      text-align: center;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .col-h::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, transparent 100%);
+      z-index: -1;
+    }
+
+    .col-h .city {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .col-h .total {
+      font-size: 13.5px;
+      font-weight: 700;
+      opacity: 0.9;
+      margin-top: 3px;
+    }
+
+    /* Row Label Titles */
+    .row-lbl {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin: 22px 14px 8px;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .row-lbl-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      padding-left: 14px;
+    }
+
+    /* Dynamic Data Rows */
+    .data-grid {
+      display: grid;
+      gap: 12px;
+      padding: 2px 14px;
+      align-items: center;
+    }
+
+    /* Comparison Cells */
+    .cell {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 10px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01);
+      transition: all 0.2s;
+    }
+
+    .cell:hover {
+      border-color: var(--text-muted);
+    }
+
+    .cell.best {
+      border-color: var(--color-green);
+      background: rgba(var(--color-green-rgb), 0.04);
+      box-shadow: inset 0 0 10px rgba(var(--color-green-rgb), 0.03);
+    }
+
+    .cv {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .cell.best .cv {
+      color: var(--color-green);
+    }
+
+    .cl {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .cell.best .cl {
+      color: var(--color-green);
+    }
+
+    /* VERDICT BOXES & PANELING */
+    .verdict-box {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      padding: 28px 24px;
+      margin-top: 24px;
+      box-shadow: var(--card-shadow);
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .vt {
+      font-family: 'Outfit', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vd {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    .money-tip-box {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(var(--color-green-rgb), 0.04);
+      border: 1px solid rgba(var(--color-green-rgb), 0.15);
+      font-size: 13.5px;
+      color: var(--color-green);
+      line-height: 1.6;
+      font-weight: 600;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .money-tip-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--color-green);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      line-height: 1;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    /* CITY HIGHLIGHT TESTIMONIAL CARDS */
+    .highlight-row {
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    /* KEYFRAMES FOR TRANSITIONS */
+    /* RESPONSIVE SCALING TWEAKS */
+    @media(max-width: 440px) {
+      .wrap {
+        padding: 24px 16px 60px;
+      }
+
+      .app-brand {
+        margin-bottom: 24px;
+      }
+
+      .logo {
+        font-size: 26px;
+      }
+
+      .col-heads,
+      .data-grid {
+        padding: 12px 10px;
+      }
+
+      .col-h {
+        padding: 12px 8px;
+      }
+
+      .col-h .city {
+        font-size: 14.5px;
+      }
+
+      .cell {
+        padding: 10px 6px;
+      }
+
+      .cv {
+        font-size: 16px;
+      }
+
+      .cl {
+        font-size: 10.5px;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background decorative designs -->
+  <div class="bg-grid-overlay"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- STICKY HEADER -->
+  <header>
+    <div class="header-container">
+      <a class="logo-row" href="index.html">
+        <span class="logo-letter" style="background:#E8420A">s</span>
+        <span class="logo-letter" style="background:#D4920A">t</span>
+        <span class="logo-letter" style="background:#1E7A45">u</span>
+        <span class="logo-letter" style="background:#E8420A">d</span>
+        <span class="logo-letter" style="background:#D4920A">y</span>
+        <span class="logo-text">tools</span>
+      </a>
+
+      <!-- Dynamic Theme Switcher -->
+      <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
+        <span class="theme-icons">
+          <!-- Moon Icon (Dark Mode) -->
+          <svg viewBox="0 0 24 24" id="icon-moon">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <!-- Sun Icon (Light Mode) -->
+          <svg viewBox="0 0 24 24" id="icon-sun">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="theme-toggle-thumb"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- APP CONTENT WRAPPER -->
+  <div class="wrap">
+
+    <!-- Cost Comparator Screen Brand -->
+    <div class="app-brand">
+      <div class="logo">💸 CostCheck UK</div>
+      <div class="tagline">Real cost breakdowns for studying in any UK city</div>
+    </div>
+
+    <!-- Active dynamic app panel -->
+    <div id="app"></div>
+
+  </div>
+
+  <!-- CALCULATOR & COMPARISON ENGINE -->
+  <script>
+    const CITIES = [
+      { name: "London", emoji: "🏙️" },
+      { name: "Manchester", emoji: "🐝" },
+      { name: "Birmingham", emoji: "🎭" },
+      { name: "Edinburgh", emoji: "🏰" },
+      { name: "Leeds", emoji: "⚽" },
+      { name: "Bristol", emoji: "🌉" },
+      { name: "Sheffield", emoji: "🎓" },
+      { name: "Nottingham", emoji: "🌳" },
+      { name: "Glasgow", emoji: "🎶" },
+      { name: "Liverpool", emoji: "🎸" },
+      { name: "Newcastle", emoji: "⚓" },
+      { name: "Southampton", emoji: "⛵" },
+    ];
+
+    // [rent, food, transport, social, other] per lifestyle level: budget, moderate, comfortable, premium
+    const COSTS = {
+      "London": [[900, 200, 100, 80, 80], [1300, 300, 150, 150, 120], [1700, 400, 180, 250, 150], [2400, 550, 200, 400, 200]],
+      "Manchester": [[550, 175, 65, 60, 60], [750, 250, 90, 120, 90], [1000, 330, 110, 180, 120], [1450, 450, 130, 280, 150]],
+      "Birmingham": [[520, 170, 60, 55, 55], [700, 240, 85, 110, 85], [950, 320, 100, 170, 110], [1350, 430, 120, 260, 140]],
+      "Edinburgh": [[650, 180, 70, 65, 65], [900, 260, 100, 130, 100], [1150, 340, 120, 200, 130], [1650, 460, 145, 320, 155]],
+      "Leeds": [[500, 165, 60, 50, 50], [680, 235, 85, 105, 80], [920, 310, 105, 165, 105], [1350, 420, 125, 255, 135]],
+      "Bristol": [[620, 180, 65, 65, 60], [850, 255, 90, 125, 95], [1100, 335, 110, 195, 125], [1600, 450, 135, 310, 155]],
+      "Sheffield": [[470, 160, 55, 45, 50], [640, 230, 80, 100, 75], [870, 300, 100, 160, 100], [1250, 410, 120, 245, 130]],
+      "Nottingham": [[460, 160, 55, 45, 50], [630, 225, 80, 95, 75], [860, 295, 98, 158, 98], [1240, 405, 118, 240, 128]],
+      "Glasgow": [[580, 175, 68, 60, 60], [790, 250, 95, 120, 90], [1040, 325, 115, 185, 115], [1500, 440, 138, 290, 148]],
+      "Liverpool": [[480, 162, 55, 50, 50], [650, 232, 80, 100, 78], [880, 302, 100, 162, 100], [1270, 412, 120, 248, 130]],
+      "Newcastle": [[470, 160, 55, 45, 50], [635, 228, 78, 98, 73], [865, 298, 98, 158, 97], [1245, 408, 118, 243, 127]],
+      "Southampton": [[560, 172, 60, 55, 55], [760, 245, 85, 112, 88], [1010, 320, 105, 175, 112], [1470, 435, 128, 272, 145]],
+    };
+
+    const LIFESTYLE_LABELS = ["Budget (frugal student)", "Moderate (average student)", "Comfortable (can spend a bit)", "Premium (quality of life matters)"];
+    const LIFESTYLE_IDX = [0, 1, 2, 3];
+
+    const TUITION = {
+      "London": { "UG": "£16,000–£26,000", "PG": "£18,000–£35,000" },
+      "default": { "UG": "£12,000–£20,000", "PG": "£14,000–£28,000" },
+    };
+
+    const CITY_TIPS = {
+      "London": "London pays off if your target career is in finance, tech or media — the networking opportunities and starting salaries are hard to match elsewhere.",
+      "Manchester": "Manchester is the top choice for students who want big-city energy without London prices. Huge Indian student community, great nightlife and strong grad employers.",
+      "Birmingham": "The most diverse city in the UK outside London. Food, culture and community are unmatched, and you're 1.5 hours by train from London.",
+      "Edinburgh": "Possibly the most beautiful university city in Europe. Scottish culture is warm and welcoming — summers and festivals make it unmissable.",
+      "Leeds": "Underrated and affordable. A favourite for creative and business students, with a student union that's genuinely world-class.",
+      "Bristol": "Creative, independent and cool. Bristol has a strong tech and design scene. Less well-known to international students — which makes you stand out.",
+      "Sheffield": "Voted best UK city for students multiple times. Unbeatable value for money and a famously tight-knit student community.",
+      "Nottingham": "Beautiful campus universities and very affordable. Great for business, engineering and life sciences.",
+      "Glasgow": "Scotland's cultural capital. Vibrant arts scene, friendly locals, and genuinely undervalued by international applicants.",
+      "Liverpool": "The birthplace of the Beatles and a UNESCO creative city. Affordable, characterful, and better-connected than people expect.",
+      "Newcastle": "One of the friendliest cities in the UK — locals go out of their way to help. Extremely affordable and growing in graduate employer presence.",
+      "Southampton": "Strong for engineering and oceanography. A quieter, more focused study environment close to both London and nature.",
+    };
+
+    // Columns styling colors using dynamic system variables
+    const COLORS = ["var(--color-purple)", "var(--color-blue)", "var(--color-red)", "var(--color-teal)"];
+    let selected = [], lifestyle = 1;
+
+    function toggleCity(name) {
+      if (selected.includes(name)) selected = selected.filter(c => c !== name);
+      else if (selected.length < 3) selected.push(name);
+      renderForm();
+    }
+
+    function renderForm() {
+      const el = document.getElementById('app');
+      const can = selected.length >= 2;
+      el.innerHTML = `
+        <div style="animation: fadeInUp 0.4s ease both;">
+          <h2>Compare UK cities</h2>
+          <p class="sub">Pick 2 or 3 cities to compare. We'll break down rent, food, transport and social costs so that you can make a smart, informed decision.</p>
+          
+          <div class="lbl">
+            Select 2 or 3 cities 
+            <span style="color:${selected.length >= 2 ? 'var(--color-green)' : 'var(--text-muted)'}; font-weight:${selected.length >= 2 ? 800 : 500}">
+              — ${selected.length}/3 selected ${selected.length >= 2 ? '✓' : ''}
+            </span>
+          </div>
+          
+          <div class="city-grid">
+            ${CITIES.map(c => `<div class="cc${selected.includes(c.name) ? ' on' : ''}" onclick="toggleCity('${c.name}')">
+              <div class="ci">${c.emoji}</div>
+              <div class="cn">${c.name}</div>
+            </div>`).join('')}
+          </div>
+          
+          <div class="lbl">Your lifestyle</div>
+          <select onchange="lifestyle=parseInt(this.value);renderForm()">
+            ${LIFESTYLE_LABELS.map((l, i) => `<option value="${i}"${lifestyle === i ? ' selected' : ''}>${l}</option>`).join('')}
+          </select>
+          
+          <button class="btn" onclick="showResults()" ${can ? '' : 'disabled'}>Compare costs →</button>
+          ${!can ? `<p style="font-size:13.5px;color:var(--text-muted);margin-top:14px;text-align:center;font-weight:600">Select at least 2 cities to compare</p>` : ''}
+        </div>`;
+    }
+
+    function showResults() {
+      const cities = selected.map(name => {
+        const d = COSTS[name][lifestyle];
+        const total = d.reduce((a, b) => a + b, 0);
+        const tuit = TUITION[name] || TUITION["default"];
+        return { name, rent: d[0], food: d[1], transport: d[2], social: d[3], other: d[4], total, tuit };
+      });
+      const cheapest = cities.reduce((a, b) => a.total < b.total ? a : b);
+      const ncols = cities.length;
+      const colStyle = `grid-template-columns: 140px repeat(${ncols}, 1fr)`;
+
+      const cats = [
+        { key: "rent", label: "Monthly rent" },
+        { key: "food", label: "Food & groceries" },
+        { key: "transport", label: "Transport" },
+        { key: "social", label: "Social & going out" },
+        { key: "other", label: "Other essentials" },
+      ];
+
+      let html = `
+        <div style="margin-bottom:28px; animation: fadeInUp 0.4s ease both;">
+          <div style="font-size:11px;color:var(--color-purple);font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Cost Comparison — ${LIFESTYLE_LABELS[lifestyle]}</div>
+          <h2 style="font-size:28px">${cities.map(c => c.name).join(' vs ')}</h2>
+        </div>
+        
+        <div class="comparison-card">
+          <div class="table-scroll-wrapper">
+            <div class="comparison-table">
+              
+              <!-- Column Headers -->
+              <div class="col-heads" style="${colStyle}">
+                <div class="row-header-title">Metric</div>
+                ${cities.map((c, i) => `<div class="col-h" style="background:${COLORS[i]}">
+                  <div class="city">${c.name}</div>
+                  <div class="total">£${c.total.toLocaleString()}/mo</div>
+                </div>`).join('')}
+              </div>`;
+
+      // Matrix Row mapping
+      cats.forEach((cat, idx) => {
+        const vals = cities.map(c => c[cat.key]);
+        const min = Math.min(...vals);
+
+        html += `
+          <div class="row-lbl">${cat.label}</div>
+          <div class="data-grid" style="${colStyle}; animation-delay: ${idx * 0.05}s">
+            <div class="row-label-title">${cat.label}</div>
+            ${cities.map(c => {
+          const best = c[cat.key] === min;
+          return `<div class="cell${best ? ' best' : ''}">
+                <div class="cv">£${c[cat.key].toLocaleString()}</div>
+                <div class="cl">${best ? '✓ cheapest' : 'per month'}</div>
+              </div>`;
+        }).join('')}
+          </div>`;
+      });
+
+      // Total Row
+      html += `
+          <div class="row-lbl" style="border-top:1px solid var(--border); padding-top:16px;">Overall Monthly Total</div>
+          <div class="data-grid" style="${colStyle}; padding-bottom:12px;">
+            <div class="row-label-title" style="font-weight: 800; color:var(--color-purple);">Total Monthly</div>
+            ${cities.map(c => {
+        const best = c.total === cheapest.total;
+        return `<div class="cell${best ? ' best' : ''}" style="padding: 16px 10px;">
+                <div class="cv" style="font-size:20px; font-weight:900;">£${c.total.toLocaleString()}</div>
+                <div class="cl" style="font-weight: 700;">${best ? '✓ overall cheapest' : 'est. per month'}</div>
+              </div>`;
+      }).join('')}
+          </div>
+
+          <!-- Tuition Row -->
+          <div class="row-lbl" style="border-top:1px solid var(--border); padding-top:16px;">Annual Tuition Fee Ranges</div>
+          <div class="data-grid" style="${colStyle}; padding-bottom:18px;">
+            <div class="row-label-title">Annual Tuition</div>
+            ${cities.map(c => `<div class="cell">
+              <div class="cv" style="font-size:14px; font-weight:700; color:var(--text-muted);">${c.tuit["PG"]}</div>
+              <div class="cl" style="font-size:10.5px;">postgraduate</div>
+            </div>`).join('')}
+          </div>
+
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-top:24px; animation: fadeInUp 0.4s ease both;">
+          ${cities.map((c, i) => `<div class="highlight-row" style="border-left:4px solid ${COLORS[i]};">
+            <strong style="color:${COLORS[i]}; font-family:'Outfit', sans-serif; font-size:15px;">${c.name}:</strong> 
+            <span style="color:var(--text-muted); font-weight:500;">${CITY_TIPS[c.name] || ''}</span>
+          </div>`).join('')}
+        </div>
+        
+        <div class="verdict-box" style="animation: fadeInUp 0.4s ease both;">
+          <div class="vt">💡 Our verdict</div>
+          <div class="vd">
+            <strong>${cheapest.name}</strong> is the most affordable of your selections at <strong>£${cheapest.total.toLocaleString()}/month</strong> — ${cities.length > 1 ? `saving you <strong>£${(Math.max(...cities.map(c => c.total)) - cheapest.total).toLocaleString()}</strong> per month compared to ${cities.reduce((a, b) => a.total > b.total ? a : b).name}` : 'making it a highly budget-friendly choice'
+        }. Beyond pure cost, consider where your target graduate employers are concentrated and where the student circles for your subject are strongest.
+          </div>
+          
+          <div class="money-tip-box">
+            <span class="money-tip-badge">Money Tip</span>
+            <span>Cook at home 4x a week, share a house rather than university halls, and get a 16–25 Railcard (£30/year) for 1/3 off all UK train fares.</span>
+          </div>
+        </div>
+        
+        <button class="btn ghost" onclick="renderForm()">Compare different cities</button>`;
+
+      document.getElementById('app').innerHTML = html;
+    }
+
+    // INITIAL LOAD
+    renderForm();
+
+    // DYNAMIC LIGHT / DARK THEME SYSTEM
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const iconSun = document.getElementById('icon-sun');
+    const iconMoon = document.getElementById('icon-moon');
+    const htmlElement = document.documentElement;
+
+    // Load theme from localStorage or system preference
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+
+    setTheme(initialTheme);
+
+    themeToggleBtn.addEventListener('click', () => {
+      const currentTheme = htmlElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+    });
+
+    function setTheme(theme) {
+      htmlElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+
+      if (theme === 'dark') {
+        iconMoon.classList.add('active');
+        iconSun.classList.remove('active');
+      } else {
+        iconSun.classList.add('active');
+        iconMoon.classList.remove('active');
+      }
+    }
+  </script>
+</body>
+
+</html>

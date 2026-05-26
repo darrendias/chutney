@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VisaPath UK — Student Visa Timeline Generator</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+
+  <!-- Premium Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    /* RESET & CORE SYSTEM */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* THEME VARIABLES (CREAM & COCOA) */
+    :root[data-theme="light"] {
+      --bg: #FBF9F6;
+      --bg-grid: rgba(138, 120, 102, 0.035);
+      --text: #1C1917;
+      --text-muted: #6B6259;
+      --border: rgba(220, 210, 198, 0.6);
+      --border-glow-default: rgba(220, 210, 198, 0.3);
+      --card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(252, 250, 247, 0.9) 100%);
+      --card-shadow: 0 10px 30px -10px rgba(138, 120, 102, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
+      --card-shadow-hover: 0 20px 45px -12px rgba(138, 120, 102, 0.16), 0 4px 12px rgba(138, 120, 102, 0.04);
+      --header-bg: rgba(251, 249, 246, 0.8);
+      --footer-hr: rgba(220, 210, 198, 0.5);
+
+      /* Accent Colors - Light Theme */
+      --color-red: hsl(14, 95%, 48%);
+      --color-red-rgb: 232, 66, 10;
+      --color-yellow: hsl(38, 92%, 42%);
+      --color-yellow-rgb: 212, 146, 10;
+      --color-green: hsl(150, 68%, 32%);
+      --color-green-rgb: 30, 122, 69;
+      --color-purple: hsl(266, 68%, 48%);
+      --color-purple-rgb: 123, 63, 196;
+      --color-blue: hsl(215, 85%, 46%);
+      --color-blue-rgb: 26, 95, 168;
+      --color-teal: hsl(170, 75%, 26%);
+      --color-teal-rgb: 15, 107, 90;
+
+      --bg-glow-1: rgba(232, 66, 10, 0.04);
+      --bg-glow-2: rgba(123, 63, 196, 0.04);
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0D0B0A;
+      --bg-grid: rgba(255, 255, 255, 0.015);
+      --text: #F9F8F6;
+      --text-muted: #9E938A;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-glow-default: rgba(255, 255, 255, 0.03);
+      --card-bg: linear-gradient(135deg, rgba(23, 20, 19, 0.7) 0%, rgba(15, 13, 12, 0.85) 100%);
+      --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      --card-shadow-hover: 0 25px 50px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      --header-bg: rgba(13, 11, 10, 0.8);
+      --footer-hr: rgba(255, 255, 255, 0.06);
+
+      /* Accent Colors - Dark Theme */
+      --color-red: hsl(14, 95%, 56%);
+      --color-red-rgb: 232, 66, 10;
+      --color-yellow: hsl(38, 92%, 52%);
+      --color-yellow-rgb: 212, 146, 10;
+      --color-green: hsl(152, 70%, 45%);
+      --color-green-rgb: 30, 122, 69;
+      --color-purple: hsl(266, 80%, 66%);
+      --color-purple-rgb: 123, 63, 196;
+      --color-blue: hsl(215, 90%, 60%);
+      --color-blue-rgb: 26, 95, 168;
+      --color-teal: hsl(170, 75%, 44%);
+      --color-teal-rgb: 15, 107, 90;
+
+      --bg-glow-1: rgba(232, 66, 10, 0.07);
+      --bg-glow-2: rgba(123, 63, 196, 0.07);
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* BACKGROUND DESIGN ELEMENTS */
+    .bg-grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.8;
+      will-change: transform;
+    }
+
+    .bg-glow-1 {
+      top: -10%;
+      left: -5%;
+      background: var(--bg-glow-1);
+      animation: floatGlow 18s infinite alternate ease-in-out;
+    }
+
+    .bg-glow-2 {
+      bottom: -10%;
+      right: -5%;
+      background: var(--bg-glow-2);
+      animation: floatGlow 22s infinite alternate-reverse ease-in-out;
+    }
+
+    @keyframes floatGlow {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      100% {
+        transform: translate(50px, 30px) scale(1.1);
+      }
+    }
+
+    /* HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      transition: all 0.3s;
+    }
+
+    .header-container {
+      max-width: 580px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Elevated Study Tools Logo */
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .logo-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      color: #fff;
+      border-radius: 6px;
+      line-height: 1;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .logo-row:hover .logo-letter {
+      transform: translateY(-2px) scale(1.08);
+    }
+
+    .logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-left: 2px;
+    }
+
+    /* Theme Switcher Button */
+    .theme-toggle-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 6px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      width: 58px;
+      height: 32px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .theme-toggle-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--text);
+      position: absolute;
+      left: 5px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-size: 10px;
+    }
+
+    [data-theme="dark"] .theme-toggle-thumb {
+      transform: translateX(26px);
+    }
+
+    .theme-toggle-btn svg {
+      width: 13px;
+      height: 13px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .theme-toggle-btn svg.active {
+      opacity: 1;
+    }
+
+    .theme-icons {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 4px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* WRAPPER CONTAINER */
+    .wrap {
+      max-width: 580px;
+      margin: 0 auto;
+      padding: 44px 20px 80px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* APP BRAND ON SCREEN */
+    .app-brand {
+      margin-bottom: 32px;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .logo {
+      font-family: 'Outfit', sans-serif;
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--color-teal);
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tagline {
+      font-size: 15px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* TYPOGRAPHY */
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .sub {
+      font-size: 15.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    /* FORM GROUPS */
+    .field {
+      margin-bottom: 24px;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .lbl {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 8px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* SELECT DROPDOWNS */
+    select {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--card-bg);
+      outline: none;
+      box-shadow: var(--card-shadow);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230F766E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 18px center;
+      background-size: 16px;
+      padding-right: 48px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    select:focus {
+      border-color: var(--color-teal);
+      box-shadow: 0 0 0 3px rgba(var(--color-teal-rgb), 0.12);
+    }
+
+    /* BUTTONS */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--color-teal);
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 4px 14px rgba(var(--color-teal-rgb), 0.25);
+      transition: transform 0.25s, box-shadow 0.25s, opacity 0.2s, filter 0.2s;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(var(--color-teal-rgb), 0.35);
+      filter: brightness(1.04);
+    }
+
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .btn.ghost {
+      background: none;
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      box-shadow: none;
+      font-weight: 700;
+      margin-top: 24px;
+    }
+
+    .btn.ghost:hover {
+      background: rgba(var(--color-teal-rgb), 0.03);
+      border-color: var(--color-teal);
+      color: var(--color-teal);
+    }
+
+    /* PREMIUM WARN / ADVICE CARDS */
+    .tip {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 18px;
+      box-shadow: var(--card-shadow);
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .tip-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--color-teal);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tip-body {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    /* GLOWING STUD TIMELINE MATRIX */
+    .timeline {
+      padding-left: 36px;
+      position: relative;
+      margin-top: 28px;
+      animation: fadeInUp 0.5s ease both;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 10px;
+      bottom: 10px;
+      width: 3px;
+      background: var(--border);
+      border-radius: 100px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Checkpoint Card Row */
+    .ti {
+      position: relative;
+      margin-bottom: 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 22px 24px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .ti:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    /* Timeline Stud Nodes */
+    .ti::before {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: 25px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--color-teal);
+      border: 3.5px solid var(--bg);
+      box-shadow: 0 0 8px rgba(var(--color-teal-rgb), 0.35);
+      z-index: 2;
+      transition: all 0.3s;
+    }
+
+    .ti.urg::before {
+      background: var(--color-yellow);
+      box-shadow: 0 0 8px rgba(var(--color-yellow-rgb), 0.35);
+    }
+
+    .ti.done::before {
+      background: var(--color-green);
+      box-shadow: 0 0 8px rgba(var(--color-green-rgb), 0.35);
+    }
+
+    /* Checkpoint text fields */
+    .month-lbl {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--color-teal);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+    }
+
+    .ti.urg .month-lbl {
+      color: var(--color-yellow);
+    }
+
+    .ti.done .month-lbl {
+      color: var(--color-green);
+    }
+
+    .ti-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .ti-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* URGENT TAGS */
+    .urg-pill {
+      display: inline-flex;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 100px;
+      background: rgba(var(--color-yellow-rgb), 0.08);
+      border: 1px solid rgba(var(--color-yellow-rgb), 0.15);
+      color: var(--color-yellow);
+      margin-left: 8px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    /* KEYFRAMES FOR TRANSITIONS */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* RESPONSIVE SCALING TWEAKS */
+    @media(max-width: 440px) {
+      .timeline {
+        padding-left: 28px;
+      }
+
+      .timeline::before {
+        left: 10px;
+      }
+
+      .ti {
+        padding: 16px 18px;
+        border-radius: 18px;
+        margin-bottom: 18px;
+      }
+
+      .ti::before {
+        left: -24px;
+        top: 20px;
+        width: 12px;
+        height: 12px;
+        border: 3px solid var(--bg);
+      }
+
+      .month-lbl {
+        margin-bottom: 4px;
+        font-size: 10.5px;
+      }
+
+      .ti-title {
+        font-size: 15.5px;
+        margin-bottom: 4px;
+      }
+
+      .ti-desc {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background decorative designs -->
+  <div class="bg-grid-overlay"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- STICKY HEADER -->
+  <header>
+    <div class="header-container">
+      <a class="logo-row" href="index.html">
+        <span class="logo-letter" style="background:#E8420A">s</span>
+        <span class="logo-letter" style="background:#D4920A">t</span>
+        <span class="logo-letter" style="background:#1E7A45">u</span>
+        <span class="logo-letter" style="background:#E8420A">d</span>
+        <span class="logo-letter" style="background:#D4920A">y</span>
+        <span class="logo-text">tools</span>
+      </a>
+
+      <!-- Dynamic Theme Switcher -->
+      <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
+        <span class="theme-icons">
+          <!-- Moon Icon (Dark Mode) -->
+          <svg viewBox="0 0 24 24" id="icon-moon">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <!-- Sun Icon (Light Mode) -->
+          <svg viewBox="0 0 24 24" id="icon-sun">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="theme-toggle-thumb"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- TIMELINE ENGINE WRAPPER -->
+  <div class="wrap">
+
+    <!-- On-screen Brand -->
+    <div class="app-brand">
+      <div class="logo">🗓️ VisaPath UK</div>
+      <div class="tagline">Your personalised UK Student Visa timeline</div>
+    </div>
+
+    <!-- Active dynamic app panel -->
+    <div id="app"></div>
+
+  </div>
+
+  <!-- TIMELINE CALCULATOR ENGINE -->
+  <script>
+    const COUNTRY_NOTES = {
+      "India": "Indian students must book a biometrics appointment at a VFS Global centre. Processing typically takes 3–8 weeks. The IHS surcharge is required and currently £776/year. Ensure your funds have been in your account for 28 consecutive days.",
+      "Nigeria": "Nigerian applicants often face longer processing times (6–12 weeks). Book your biometrics at the UK Visa Application Centre early. Demonstrate strong ties to Nigeria (family, property, job) to reassure visa officers.",
+      "Pakistan": "Pakistani nationals should allow 8–12 weeks for processing. VAC appointments can be limited — book the earliest available slot. Police clearance certificates may be requested.",
+      "Bangladesh": "Bangladeshi students must use the UKVI approved VAC in Dhaka. Processing can take 6–10 weeks. Ensure all financial documents are translated into English.",
+      "Sri Lanka": "Sri Lankan applicants typically see 3–6 week processing times. Use the VFS Global centre in Colombo. Strong English scores (IELTS/PTE) are essential.",
+      "Nepal": "Nepalese students should apply at the British Embassy in Kathmandu. Allow 4–8 weeks. Bank statements showing stable funds over 28 days are critical.",
+      "Ghana": "Ghanaian applicants may face scrutiny on financial documents — ensure everything is officially stamped and translated. Allow 8–12 weeks.",
+      "Kenya": "Kenyan students generally see 4–8 week processing. Use the UKVI application centre in Nairobi. Start the process early in case of delays.",
+      "China": "Chinese applicants often have fast processing (2–4 weeks) but must use the official UKVI centres. Have HSK/English scores ready as a prerequisite.",
+      "Malaysia": "Malaysian students are generally straightforward — 3–5 week processing. Ensure your IELTS/PTE meets the programme requirement.",
+      "Philippines": "Filipino applicants should allow 4–8 weeks and book at the VFS Global centre. Strong financial documentation is key.",
+      "USA": "US students do not need a Tier 4 visa for courses under 6 months, but a Student Visa is required for longer courses. Processing is typically 3–5 weeks.",
+      "Canada": "Canadian students follow a similar process to the US — straightforward with 3–5 week processing.",
+      "Australia": "Australian applicants generally see fast processing (2–4 weeks). You'll still need to apply via UKVI online.",
+      "EU / EEA Country": "EU/EEA nationals no longer have automatic right to study in the UK post-Brexit. You must apply for a Student Visa. Processing is typically 3–5 weeks.",
+    };
+
+    const INTAKE_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const LEVELS = ["Undergraduate (UG)", "Postgraduate Taught (PGT)", "Postgraduate Research (PGR)", "Foundation Year", "Pre-sessional English"];
+    const COUNTRIES = Object.keys(COUNTRY_NOTES).concat(["Other"]);
+
+    const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    function addMonths(baseMonth, baseYear, delta) {
+      let m = baseMonth + delta;
+      let y = baseYear;
+      while (m < 0) { m += 12; y--; }
+      while (m > 11) { m -= 12; y++; }
+      return MONTH_NAMES[m] + " " + y;
+    }
+
+    function buildTimeline(country, intakeMonth, intakeYear, level) {
+      const bm = MONTH_NAMES.indexOf(intakeMonth);
+      const by = intakeYear;
+      const note = COUNTRY_NOTES[country] || "Allow 4–8 weeks for visa processing. Book your biometrics appointment as soon as your application is submitted.";
+
+      const isLongCourse = level !== "Pre-sessional English";
+
+      const items = [
+        { delta: -8, urgent: false, title: "Research universities & shortlist", desc: "Start researching programmes, entry requirements, and scholarship deadlines. UCAS opens in September for undergraduate entry." },
+        { delta: -7, urgent: false, title: "Sit English language test (IELTS/PTE/OET)", desc: "Book and complete your IELTS or PTE test now. Most UK universities require IELTS 6.0–6.5 for UG and 6.5–7.0 for PG. Results take 2–13 days." },
+        { delta: -6, urgent: false, title: "Submit university applications", desc: "Apply through UCAS (UG) or directly to universities (PG). Attach your personal statement, transcripts, and English test scores." },
+        { delta: -5, urgent: false, title: "Receive & accept your offer", desc: "Accept your unconditional or conditional offer. If conditional, focus on meeting the academic requirements before the deadline." },
+        { delta: -4, urgent: true, title: "Receive your CAS (Confirmation of Acceptance for Studies)", desc: "Your university issues a CAS number once you've accepted and met all conditions. You CANNOT apply for your visa without this. Chase it proactively." },
+        { delta: -3, urgent: true, title: "Apply for your UK Student Visa online", desc: "Apply on the UKVI website using your CAS number. Pay the visa fee (£490) and the IHS surcharge. Have £1,334/month in savings (£1,023 outside London) for 28 consecutive days." },
+        { delta: -3, urgent: false, title: "Gather your documents", desc: "Passport, CAS letter, bank statements (28 days), IELTS/PTE certificate, academic transcripts, financial sponsor letter (if applicable), TB test results (if required for your country)." },
+        { delta: -2, urgent: true, title: "Attend biometrics appointment", desc: `Book and attend your biometrics at the nearest VAC/VFS Global centre. ${note.split('.')[0]}.` },
+        { delta: -1, urgent: false, title: "Book flights & accommodation", desc: "Once your visa is granted, book your flight to arrive before term starts. Pre-book student halls or check university accommodation portals — rooms fill fast." },
+        { delta: -1, urgent: false, title: "Prepare finances & SIM card", desc: "Open a UK bank account online before arriving (Monzo, Starling or Wise work without a UK address). Buy a UK SIM card online to activate on arrival." },
+        { delta: 0, urgent: false, title: "Arrive in the UK & enrol 🎉", desc: "Arrive before your CAS start date. Attend university enrolment/induction week. Register with the university and pick up your BRP (Biometric Residence Permit) from the post office." },
+        { delta: 1, urgent: false, title: "Register with a GP", desc: "Register with a local NHS GP within your first month. As an international student who paid the IHS surcharge, you have full NHS access — use it." },
+      ];
+
+      return items.map(item => ({
+        ...item,
+        monthLabel: addMonths(bm, by, item.delta),
+      }));
+    }
+
+    let country = "", intake = "", intakeYear = 2025, level = "";
+
+    function update() { render(); }
+
+    function render() {
+      const canGo = country && intake && level;
+      const el = document.getElementById('app');
+
+      if (!el._showResults) {
+        el.innerHTML = `
+          <div style="animation: fadeInUp 0.4s ease both;">
+            <h2>Generate your visa timeline</h2>
+            <p class="sub">Tell us where you're from and when you're starting. We'll build a monthly checklist for your entire journey, so you never miss a deadline.</p>
+            
+            <div class="field">
+              <label class="lbl">Your country of nationality</label>
+              <select onchange="country=this.value;update()">
+                <option value="">Select your country...</option>
+                ${COUNTRIES.map(c => `<option${country === c ? ' selected' : ''}>${c}</option>`).join('')}
+              </select>
+            </div>
+            
+            <div class="field">
+              <label class="lbl">Course intake</label>
+              <select onchange="var v=this.value.split('|');intake=v[0];intakeYear=parseInt(v[1]);update()">
+                <option value="">Select intake month...</option>
+                ${[2025, 2026].flatMap(y => INTAKE_MONTHS.map(m => `<option value="${m}|${y}"${intake === m && intakeYear === y ? ' selected' : ''}>${m} ${y}</option>`))}
+              </select>
+            </div>
+            
+            <div class="field">
+              <label class="lbl">Level of study</label>
+              <select onchange="level=this.value;update()">
+                <option value="">Select level...</option>
+                ${LEVELS.map(l => `<option${level === l ? ' selected' : ''}>${l}</option>`).join('')}
+              </select>
+            </div>
+            
+            <button class="btn" onclick="showTimeline()" ${canGo ? '' : 'disabled'}>Generate my timeline →</button>
+            ${!canGo ? `<p style="font-size:13.5px;color:var(--text-muted);margin-top:14px;text-align:center;font-weight:600;">Complete all 3 fields above</p>` : ''}
+          </div>`;
+      }
+    }
+
+    function showTimeline() {
+      const timeline = buildTimeline(country, intake, intakeYear, level);
+      const note = COUNTRY_NOTES[country] || "Allow 4–8 weeks for processing and book your biometrics appointment promptly.";
+      const el = document.getElementById('app');
+      el._showResults = true;
+
+      el.innerHTML = `
+        <div style="margin-bottom:28px; animation: fadeInUp 0.4s ease both;">
+          <div style="font-size:11px;color:var(--color-teal);font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Your Personalised Timeline</div>
+          <h2 style="font-size:28px">${country} → UK · ${intake} ${intakeYear}</h2>
+          <p style="font-size:14.5px;color:var(--text-muted);font-weight:600;margin-top:6px">${level}</p>
+        </div>
+        
+        <!-- Custom Warning Advice testinfo -->
+        <div class="tip">
+          <div class="tip-title">💡 Key info for ${country} students</div>
+          <div class="tip-body">${note}</div>
+        </div>
+        
+        <div class="tip" style="border-color: rgba(var(--color-yellow-rgb), 0.25); background: rgba(var(--color-yellow-rgb), 0.04);">
+          <div class="tip-title" style="color:var(--color-yellow)">⚡ Most important rule</div>
+          <div class="tip-body" style="color:var(--text)">You need <strong>£1,334/month</strong> (or £1,023/month outside London) in your bank account for <strong>28 consecutive days</strong> before applying. Start building this fund early.</div>
+        </div>
+        
+        <div style="margin:36px 0 18px; animation: fadeInUp 0.4s ease both;">
+          <div style="font-family:'Outfit', sans-serif; font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.12em">Month-by-Month Checklist</div>
+        </div>
+        
+        <div class="timeline">
+          ${timeline.map((t, idx) => `<div class="ti${t.urgent ? ' urg' : ''}" style="animation-delay: ${idx * 0.04}s">
+            <div class="month-lbl">
+              ${t.monthLabel}
+              ${t.urgent ? '<span class="urg-pill">⚡ urgent</span>' : ''}
+            </div>
+            <div class="ti-title">${t.title}</div>
+            <div class="ti-desc">${t.desc}</div>
+          </div>`).join('')}
+        </div>
+        
+        <button class="btn ghost" onclick="document.getElementById('app')._showResults=false;render()">← Generate another timeline</button>`;
+    }
+
+    // INITIAL LOAD
+    render();
+
+    // DYNAMIC LIGHT / DARK THEME SYSTEM
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const iconSun = document.getElementById('icon-sun');
+    const iconMoon = document.getElementById('icon-moon');
+    const htmlElement = document.documentElement;
+
+    // Load theme from localStorage or system preference
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+
+    setTheme(initialTheme);
+
+    themeToggleBtn.addEventListener('click', () => {
+      const currentTheme = htmlElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+    });
+
+    function setTheme(theme) {
+      htmlElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+
+      if (theme === 'dark') {
+        iconMoon.classList.add('active');
+        iconSun.classList.remove('active');
+      } else {
+        iconSun.classList.add('active');
+        iconMoon.classList.remove('active');
+      }
+    }
+  </script>
+</body>
+
+</html>

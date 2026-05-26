@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UK University Shortlister — UniMatch AI</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+
+  <!-- Premium Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    /* RESET & CORE SYSTEM */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* THEME VARIABLES (CREAM & COCOA) */
+    :root[data-theme="light"] {
+      --bg: #FBF9F6;
+      --bg-grid: rgba(138, 120, 102, 0.035);
+      --text: #1C1917;
+      --text-muted: #6B6259;
+      --border: rgba(220, 210, 198, 0.6);
+      --border-glow-default: rgba(220, 210, 198, 0.3);
+      --card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(252, 250, 247, 0.9) 100%);
+      --card-shadow: 0 10px 30px -10px rgba(138, 120, 102, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
+      --card-shadow-hover: 0 20px 45px -12px rgba(138, 120, 102, 0.16), 0 4px 12px rgba(138, 120, 102, 0.04);
+      --header-bg: rgba(251, 249, 246, 0.8);
+      --footer-hr: rgba(220, 210, 198, 0.5);
+
+      /* Accent Colors - Light Theme */
+      --color-red: hsl(14, 95%, 48%);
+      --color-red-rgb: 232, 66, 10;
+      --color-yellow: hsl(38, 92%, 42%);
+      --color-yellow-rgb: 212, 146, 10;
+      --color-green: hsl(150, 68%, 32%);
+      --color-green-rgb: 30, 122, 69;
+      --color-purple: hsl(266, 68%, 48%);
+      --color-purple-rgb: 123, 63, 196;
+      --color-blue: hsl(215, 85%, 46%);
+      --color-blue-rgb: 26, 95, 168;
+      --color-teal: hsl(170, 75%, 26%);
+      --color-teal-rgb: 15, 107, 90;
+
+      --bg-glow-1: rgba(232, 66, 10, 0.04);
+      --bg-glow-2: rgba(123, 63, 196, 0.04);
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0D0B0A;
+      --bg-grid: rgba(255, 255, 255, 0.015);
+      --text: #F9F8F6;
+      --text-muted: #9E938A;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-glow-default: rgba(255, 255, 255, 0.03);
+      --card-bg: linear-gradient(135deg, rgba(23, 20, 19, 0.7) 0%, rgba(15, 13, 12, 0.85) 100%);
+      --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      --card-shadow-hover: 0 25px 50px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      --header-bg: rgba(13, 11, 10, 0.8);
+      --footer-hr: rgba(255, 255, 255, 0.06);
+
+      /* Accent Colors - Dark Theme */
+      --color-red: hsl(14, 95%, 56%);
+      --color-red-rgb: 232, 66, 10;
+      --color-yellow: hsl(38, 92%, 52%);
+      --color-yellow-rgb: 212, 146, 10;
+      --color-green: hsl(152, 70%, 45%);
+      --color-green-rgb: 30, 122, 69;
+      --color-purple: hsl(266, 80%, 66%);
+      --color-purple-rgb: 123, 63, 196;
+      --color-blue: hsl(215, 90%, 60%);
+      --color-blue-rgb: 26, 95, 168;
+      --color-teal: hsl(170, 75%, 44%);
+      --color-teal-rgb: 15, 107, 90;
+
+      --bg-glow-1: rgba(232, 66, 10, 0.07);
+      --bg-glow-2: rgba(123, 63, 196, 0.07);
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* BACKGROUND DESIGN ELEMENTS */
+    .bg-grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.8;
+      will-change: transform;
+    }
+
+    .bg-glow-1 {
+      top: -10%;
+      left: -5%;
+      background: var(--bg-glow-1);
+      animation: floatGlow 18s infinite alternate ease-in-out;
+    }
+
+    .bg-glow-2 {
+      bottom: -10%;
+      right: -5%;
+      background: var(--bg-glow-2);
+      animation: floatGlow 22s infinite alternate-reverse ease-in-out;
+    }
+
+    @keyframes floatGlow {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      100% {
+        transform: translate(50px, 30px) scale(1.1);
+      }
+    }
+
+    /* HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      transition: all 0.3s;
+    }
+
+    .header-container {
+      max-width: 570px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Elevated Study Tools Logo */
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .logo-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      color: #fff;
+      border-radius: 6px;
+      line-height: 1;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .logo-row:hover .logo-letter {
+      transform: translateY(-2px) scale(1.08);
+    }
+
+    .logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-left: 2px;
+    }
+
+    /* Theme Switcher Button */
+    .theme-toggle-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 6px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      width: 58px;
+      height: 32px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .theme-toggle-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--text);
+      position: absolute;
+      left: 5px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-size: 10px;
+    }
+
+    [data-theme="dark"] .theme-toggle-thumb {
+      transform: translateX(26px);
+    }
+
+    .theme-toggle-btn svg {
+      width: 13px;
+      height: 13px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .theme-toggle-btn svg.active {
+      opacity: 1;
+    }
+
+    .theme-icons {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 4px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* APP CONTAINER */
+    .wrap {
+      max-width: 570px;
+      margin: 0 auto;
+      padding: 44px 20px 80px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* ON-SCREEN BRAND */
+    .app-brand {
+      margin-bottom: 32px;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .logo-main {
+      font-family: 'Outfit', sans-serif;
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--color-blue);
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tagline {
+      font-size: 15px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* TYPOGRAPHY */
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .sub {
+      font-size: 15.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .step-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--color-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 12px;
+    }
+
+    .q {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.45;
+    }
+
+    /* GLASS OPTION CHOICES */
+    .opts {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .opt {
+      padding: 16px 20px;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      font-weight: 500;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .opt:hover {
+      border-color: var(--color-blue);
+      transform: translateY(-2px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .opt.on {
+      border-color: var(--color-blue);
+      background: rgba(var(--color-blue-rgb), 0.04);
+      color: var(--color-blue);
+      font-weight: 700;
+      box-shadow: 0 8px 24px -8px rgba(var(--color-blue-rgb), 0.12);
+    }
+
+    .opt.on span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-blue);
+      color: #fff;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    /* ACTION BUTTONS */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--color-blue);
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 4px 14px rgba(var(--color-blue-rgb), 0.25);
+      transition: transform 0.25s, box-shadow 0.25s, opacity 0.2s, filter 0.2s;
+      margin-top: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(var(--color-blue-rgb), 0.35);
+      filter: brightness(1.04);
+    }
+
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .btn.ghost {
+      background: none;
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      box-shadow: none;
+      margin-top: 12px;
+      font-weight: 700;
+    }
+
+    .btn.ghost:hover {
+      background: rgba(var(--color-blue-rgb), 0.03);
+      border-color: var(--color-blue);
+      color: var(--color-blue);
+    }
+
+    /* SLIDING PROGRESS SLIDER */
+    .progress {
+      height: 6px;
+      background: var(--border);
+      border-radius: 100px;
+      margin-bottom: 32px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+      animation: fadeInDown 0.4s ease both;
+    }
+
+    .pbar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-teal) 100%);
+      border-radius: 100px;
+      box-shadow: 0 0 10px rgba(var(--color-blue-rgb), 0.35);
+      transition: width 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* MATCH CARD DESIGN SYSTEM */
+    .card {
+      position: relative;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 20px;
+      padding: 1px;
+      /* border-glow allowance */
+      animation: fadeInUp 0.4s ease both;
+      /* Mouse glow binding hooks */
+      --mouse-x: 0px;
+      --mouse-y: 0px;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .card.top {
+      border-color: var(--color-blue);
+      border-width: 1.5px;
+      --card-glow-border: rgba(var(--color-blue-rgb), 0.22);
+      --card-glow-inner: rgba(var(--color-blue-rgb), 0.1);
+    }
+
+    .card:not(.top) {
+      --card-glow-border: rgba(var(--color-blue-rgb), 0.16);
+      --card-glow-inner: rgba(var(--color-blue-rgb), 0.08);
+    }
+
+    .card-border-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: radial-gradient(300px circle at var(--mouse-x) var(--mouse-y), var(--card-glow-border, transparent), transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .card-inner-glow {
+      position: absolute;
+      inset: 1px;
+      border-radius: 23px;
+      background: radial-gradient(350px circle at var(--mouse-x) var(--mouse-y), var(--card-glow-inner, transparent), transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .card:hover .card-border-glow,
+    .card:hover .card-inner-glow {
+      opacity: 1;
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 2;
+      background: var(--card-bg);
+      border-radius: 23px;
+      padding: 24px;
+      height: 100%;
+    }
+
+    .rank {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--color-blue) 0%, var(--color-teal) 100%);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(var(--color-blue-rgb), 0.25);
+    }
+
+    .uni-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .uni-loc {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .match-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 100px;
+      background: rgba(var(--color-green-rgb), 0.06);
+      border: 1px solid rgba(var(--color-green-rgb), 0.15);
+      color: var(--color-green);
+      display: inline-block;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .uni-desc {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 100px;
+      background: var(--border);
+      color: var(--text-muted);
+    }
+
+    .card.top .tag {
+      background: rgba(var(--color-blue-rgb), 0.04);
+      color: var(--color-blue);
+      border: 1px solid rgba(var(--color-blue-rgb), 0.1);
+    }
+
+    /* TEST WEBSITE LINKS */
+    .website-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      font-size: 13.5px;
+      color: var(--color-blue);
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+
+    .website-link .arrow {
+      transition: transform 0.2s;
+    }
+
+    .website-link:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    /* KEYFRAMES FOR TRANSITIONS */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* RESPONSIVE SCALING TWEAKS */
+    @media(max-width: 440px) {
+      .card-content {
+        padding: 20px 18px;
+      }
+
+      .card-content>div {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .rank {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+        border-radius: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background decorative designs -->
+  <div class="bg-grid-overlay"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- STICKY HEADER -->
+  <header>
+    <div class="header-container">
+      <a class="logo-row" href="index.html">
+        <span class="logo-letter" style="background:#E8420A">s</span>
+        <span class="logo-letter" style="background:#D4920A">t</span>
+        <span class="logo-letter" style="background:#1E7A45">u</span>
+        <span class="logo-letter" style="background:#E8420A">d</span>
+        <span class="logo-letter" style="background:#D4920A">y</span>
+        <span class="logo-text">tools</span>
+      </a>
+
+      <!-- Dynamic Theme Switcher -->
+      <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
+        <span class="theme-icons">
+          <!-- Moon Icon (Dark Mode) -->
+          <svg viewBox="0 0 24 24" id="icon-moon">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <!-- Sun Icon (Light Mode) -->
+          <svg viewBox="0 0 24 24" id="icon-sun">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="theme-toggle-thumb"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MATCH ENGINE ROOT -->
+  <div class="wrap" id="root"></div>
+
+  <!-- QUESTIONNAIRE & SCORING SCRIPTS -->
+  <script>
+    const QS = [
+      { key: "subject", q: "What do you want to study?", opts: ["Computer Science / Tech", "Business & Management", "Engineering", "Medicine & Healthcare", "Law", "Arts, Design & Media", "Social Sciences", "Finance & Economics", "Psychology", "Other / Undecided"] },
+      { key: "grade", q: "What are your expected grades?", opts: ["A*AA or equivalent", "AAB – ABB", "BBB – BBC", "BCC or below", "International / Non-UK qualification"] },
+      { key: "priority", q: "What matters most to you?", opts: ["Graduate employment rate", "Research reputation", "Campus life & community", "City location & lifestyle", "Scholarship & funding", "Smaller class sizes"] },
+      { key: "city", q: "What kind of city appeals to you?", opts: ["London (big city energy)", "Northern cities — Manchester, Leeds", "Midlands — Birmingham, Nottingham", "Scotland — Edinburgh, Glasgow", "Smaller university towns", "Open to anywhere"] },
+      { key: "budget", q: "What's your annual budget? (tuition + living)", opts: ["Under £25,000", "£25,000 – £35,000", "£35,000 – £45,000", "£45,000+", "Need maximum scholarship support"] },
+    ];
+
+    const DB = [
+      { name: "UCL", loc: "London", url: "https://www.ucl.ac.uk", sub: ["Computer Science / Tech", "Engineering", "Social Sciences", "Medicine & Healthcare", "Law", "Finance & Economics"], grade: ["A*AA or equivalent", "AAB – ABB"], pri: ["Research reputation", "Graduate employment rate", "City location & lifestyle"], city: ["London (big city energy)"], bud: ["£35,000 – £45,000", "£45,000+"], desc: "One of the world's top 10 universities, sitting in the heart of London with exceptional research output and graduate outcomes across almost every discipline.", tags: ["Russell Group", "Top 10 global", "London campus"] },
+      { name: "King's College London", loc: "London", url: "https://www.kcl.ac.uk", sub: ["Medicine & Healthcare", "Law", "Social Sciences", "Arts, Design & Media", "Psychology"], grade: ["A*AA or equivalent", "AAB – ABB"], pri: ["Research reputation", "Graduate employment rate", "City location & lifestyle"], city: ["London (big city energy)"], bud: ["£35,000 – £45,000", "£45,000+"], desc: "Iconic London university with world-leading medicine, law and humanities. Multiple campuses along the Thames in central London.", tags: ["Russell Group", "Medical school", "Thames-side campuses"] },
+      { name: "Imperial College London", loc: "London", url: "https://www.imperial.ac.uk", sub: ["Computer Science / Tech", "Engineering", "Medicine & Healthcare", "Finance & Economics"], grade: ["A*AA or equivalent"], pri: ["Research reputation", "Graduate employment rate"], city: ["London (big city energy)"], bud: ["£45,000+"], desc: "The UK's #1 science and engineering university. Extremely high graduate salaries and deep industry partnerships with global tech and finance firms.", tags: ["#1 for STEM", "High salaries", "Global reputation"] },
+      { name: "University of Manchester", loc: "Manchester", url: "https://www.manchester.ac.uk", sub: ["Computer Science / Tech", "Business & Management", "Engineering", "Social Sciences", "Medicine & Healthcare", "Finance & Economics"], grade: ["A*AA or equivalent", "AAB – ABB", "BBB – BBC"], pri: ["Research reputation", "Campus life & community", "Scholarship & funding"], city: ["Northern cities — Manchester, Leeds", "Open to anywhere"], bud: ["£25,000 – £35,000", "£35,000 – £45,000"], desc: "One of the UK's most popular universities with a huge international student community, vibrant city life, and strong research across most subjects.", tags: ["Russell Group", "Huge student city", "Strong scholarships"] },
+      { name: "University of Edinburgh", loc: "Edinburgh", url: "https://www.ed.ac.uk", sub: ["Computer Science / Tech", "Medicine & Healthcare", "Law", "Arts, Design & Media", "Social Sciences", "Finance & Economics"], grade: ["A*AA or equivalent", "AAB – ABB"], pri: ["Research reputation", "Campus life & community", "City location & lifestyle"], city: ["Scotland — Edinburgh, Glasgow", "Open to anywhere"], bud: ["£25,000 – £35,000", "£35,000 – £45,000"], desc: "Scotland's most prestigious university in one of Europe's most beautiful and liveable cities. Outstanding research and a deeply international atmosphere.", tags: ["Russell Group", "Historic city", "Global alumni"] },
+      { name: "University of Birmingham", loc: "Birmingham", url: "https://www.birmingham.ac.uk", sub: ["Business & Management", "Engineering", "Computer Science / Tech", "Medicine & Healthcare", "Social Sciences", "Psychology"], grade: ["AAB – ABB", "BBB – BBC"], pri: ["Campus life & community", "Scholarship & funding", "Graduate employment rate"], city: ["Midlands — Birmingham, Nottingham", "Open to anywhere"], bud: ["£25,000 – £35,000", "£35,000 – £45,000"], desc: "A leading Russell Group university with a stunning self-contained campus, a huge South Asian student population, and strong industry connections.", tags: ["Russell Group", "Large campus", "Diverse community"] },
+      { name: "University of Leeds", loc: "Leeds", url: "https://www.leeds.ac.uk", sub: ["Business & Management", "Arts, Design & Media", "Engineering", "Social Sciences", "Medicine & Healthcare", "Computer Science / Tech"], grade: ["AAB – ABB", "BBB – BBC"], pri: ["Campus life & community", "City location & lifestyle", "Graduate employment rate"], city: ["Northern cities — Manchester, Leeds", "Open to anywhere"], bud: ["£25,000 – £35,000"], desc: "One of the UK's largest universities in a vibrant, affordable student city. Brilliant for creative subjects and business, with a famously lively student union.", tags: ["Russell Group", "Affordable city", "Great social scene"] },
+      { name: "University of Sheffield", loc: "Sheffield", url: "https://www.sheffield.ac.uk", sub: ["Engineering", "Computer Science / Tech", "Business & Management", "Social Sciences", "Arts, Design & Media", "Psychology"], grade: ["AAB – ABB", "BBB – BBC"], pri: ["Campus life & community", "Scholarship & funding", "Smaller class sizes"], city: ["Northern cities — Manchester, Leeds", "Smaller university towns", "Open to anywhere"], bud: ["Under £25,000", "£25,000 – £35,000", "Need maximum scholarship support"], desc: "Voted the UK's best student city multiple times. Affordable, friendly, and with excellent engineering and social science programmes.", tags: ["Russell Group", "Best student city", "Affordable living"] },
+      { name: "University of Nottingham", loc: "Nottingham", url: "https://www.nottingham.ac.uk", sub: ["Business & Management", "Computer Science / Tech", "Engineering", "Medicine & Healthcare", "Finance & Economics", "Psychology"], grade: ["AAB – ABB", "BBB – BBC"], pri: ["Campus life & community", "Graduate employment rate", "Scholarship & funding"], city: ["Midlands — Birmingham, Nottingham", "Smaller university towns", "Open to anywhere"], bud: ["Under £25,000", "£25,000 – £35,000", "Need maximum scholarship support"], desc: "Beautiful campus university with strong business and engineering schools, good scholarship availability, and a lively international student community.", tags: ["Russell Group", "Stunning campus", "Scholarship options"] },
+      { name: "University of Glasgow", loc: "Glasgow", url: "https://www.gla.ac.uk", sub: ["Medicine & Healthcare", "Engineering", "Computer Science / Tech", "Social Sciences", "Law", "Arts, Design & Media"], grade: ["AAB – ABB", "BBB – BBC"], pri: ["Research reputation", "Scholarship & funding", "City location & lifestyle"], city: ["Scotland — Edinburgh, Glasgow", "Open to anywhere"], bud: ["Under £25,000", "£25,000 – £35,000", "Need maximum scholarship support"], desc: "Scotland's oldest university with world-class medical and engineering programmes. Glasgow is underrated — vibrant, affordable and genuinely welcoming.", tags: ["Russell Group", "Strong medicine", "Glasgow culture"] },
+      { name: "Brunel University London", loc: "West London", url: "https://www.brunel.ac.uk", sub: ["Engineering", "Computer Science / Tech", "Business & Management", "Arts, Design & Media", "Psychology", "Social Sciences"], grade: ["BBB – BBC", "BCC or below", "International / Non-UK qualification"], pri: ["Graduate employment rate", "Scholarship & funding", "Smaller class sizes"], city: ["London (big city energy)", "Open to anywhere"], bud: ["£25,000 – £35,000", "Need maximum scholarship support"], desc: "A strong choice for engineering, computing and business with excellent graduate employment rates and a very diverse international community in West London.", tags: ["London location", "Industry placements", "Diverse intake"] },
+      { name: "University of Surrey", loc: "Guildford", url: "https://www.surrey.ac.uk", sub: ["Engineering", "Business & Management", "Computer Science / Tech", "Medicine & Healthcare", "Finance & Economics"], grade: ["AAB – ABB", "BBB – BBC"], pri: ["Graduate employment rate", "Smaller class sizes", "Campus life & community"], city: ["Smaller university towns", "Open to anywhere"], bud: ["£25,000 – £35,000"], desc: "Consistently one of the UK's top universities for graduate employment. Known for professional training years and strong industry partnerships.", tags: ["Top for employment", "Professional placements", "Safe campus town"] },
+      { name: "Queen Mary University of London", loc: "London", url: "https://www.qmul.ac.uk", sub: ["Law", "Medicine & Healthcare", "Computer Science / Tech", "Social Sciences", "Engineering", "Finance & Economics"], grade: ["AAB – ABB", "BBB – BBC", "International / Non-UK qualification"], pri: ["City location & lifestyle", "Scholarship & funding", "Graduate employment rate"], city: ["London (big city energy)"], bud: ["£25,000 – £35,000", "£35,000 – £45,000", "Need maximum scholarship support"], desc: "A Russell Group university in East London with outstanding law and medicine, strong scholarship support, and one of the most diverse student bodies in the UK.", tags: ["Russell Group", "East London", "Great scholarships"] },
+      { name: "University of Bristol", loc: "Bristol", url: "https://www.bristol.ac.uk", sub: ["Engineering", "Computer Science / Tech", "Social Sciences", "Arts, Design & Media", "Law", "Medicine & Healthcare"], grade: ["A*AA or equivalent", "AAB – ABB"], pri: ["Research reputation", "City location & lifestyle", "Campus life & community"], city: ["Smaller university towns", "Open to anywhere"], bud: ["£25,000 – £35,000", "£35,000 – £45,000"], desc: "A top-10 UK university in one of Britain's most creative and vibrant cities. Known for strong engineering, law and arts in a beautiful hillside setting.", tags: ["Russell Group", "Creative city", "Top 10 UK"] },
+      { name: "Coventry University", loc: "Coventry", url: "https://www.coventry.ac.uk", sub: ["Business & Management", "Engineering", "Computer Science / Tech", "Arts, Design & Media", "Social Sciences", "Psychology"], grade: ["BBB – BBC", "BCC or below", "International / Non-UK qualification"], pri: ["Graduate employment rate", "Scholarship & funding", "Smaller class sizes"], city: ["Midlands — Birmingham, Nottingham", "Open to anywhere"], bud: ["Under £25,000", "£25,000 – £35,000", "Need maximum scholarship support"], desc: "One of the UK's fastest-rising universities with excellent industry links, generous scholarships for international students, and a very affordable cost of living.", tags: ["Rising university", "Strong scholarships", "Affordable Midlands"] },
+      { name: "Loughborough University", loc: "Loughborough", url: "https://www.lboro.ac.uk", sub: ["Engineering", "Computer Science / Tech", "Business & Management", "Social Sciences", "Arts, Design & Media"], grade: ["AAB – ABB", "BBB – BBC"], pri: ["Campus life & community", "Graduate employment rate", "Smaller class sizes"], city: ["Midlands — Birmingham, Nottingham", "Smaller university towns", "Open to anywhere"], bud: ["Under £25,000", "£25,000 – £35,000"], desc: "Famous for sport and engineering. Consistently ranked #1 for student satisfaction, with phenomenal campus facilities and very strong employer relationships.", tags: ["#1 student satisfaction", "Sports excellence", "Engineering hub"] },
+    ];
+
+    function score(uni, ans) {
+      let s = 0;
+      if (uni.sub.includes(ans.subject)) s += 30;
+      if (uni.grade.includes(ans.grade)) s += 20;
+      if (uni.pri.includes(ans.priority)) s += 20;
+      if (uni.city.includes(ans.city)) s += 15;
+      if (uni.bud.includes(ans.budget)) s += 15;
+      return s;
+    }
+
+    let st = { step: 0, ans: {} };
+
+    // Dynamic Card Spotlight Mouse Hover Glow Init
+    function initCardGlows() {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          card.style.setProperty('--mouse-x', `${x}px`);
+          card.style.setProperty('--mouse-y', `${y}px`);
+        });
+      });
+    }
+
+    function render() {
+      const el = document.getElementById('root');
+
+      if (st.step === 0) {
+        el.innerHTML = `
+          <div style="animation: fadeInUp 0.4s ease both;">
+            <div class="app-brand">
+              <div class="logo-main">🎓 UniMatch AI</div>
+              <div class="tagline">Find your best-fit UK university in 60 seconds</div>
+            </div>
+            <h2>Which UK university is right for you?</h2>
+            <p class="sub">Answer 5 quick questions and our matchmaker will shortlist your top 3 universities. Each with personalised reasons why each one fits your academic profile, budget, and lifestyle.</p>
+            <button class="btn" onclick="go(1)">Start matching →</button>
+          </div>`;
+        return;
+      }
+
+      if (st.step >= 1 && st.step <= 5) {
+        const q = QS[st.step - 1];
+        const sel = st.ans[q.key];
+        const pct = (st.step - 1) / 5 * 100;
+
+        el.innerHTML = `
+          <div class="progress"><div class="pbar" style="width:${pct}%"></div></div>
+          <div style="animation: fadeInUp 0.4s ease both;">
+            <div class="step-label">Question ${st.step} of 5</div>
+            <div class="q">${q.q}</div>
+            <div class="opts">
+              ${q.opts.map((o, idx) => `<button class="opt${sel === o ? ' on' : ''}" style="animation-delay: ${idx * 0.04}s" onclick="pick('${q.key}','${o.replace(/'/g, "\\'")}')">
+                ${o}
+                ${sel === o ? '<span>✓</span>' : ''}
+              </button>`).join('')}
+            </div>
+            
+            ${sel ? `<button class="btn" style="animation: fadeInUp 0.3s ease both;" onclick="next()">Continue →</button>` : ''}
+            ${st.step > 1 ? `<button class="btn ghost" onclick="go(${st.step - 1})">← Back</button>` : ''}
+          </div>`;
+        return;
+      }
+
+      // Step 6: Scored results
+      const scored = DB.map(u => ({ ...u, sc: score(u, st.ans) })).sort((a, b) => b.sc - a.sc).slice(0, 3);
+      const max = scored[0].sc;
+
+      el.innerHTML = `
+        <div style="margin-bottom:28px; animation: fadeInUp 0.4s ease both;">
+          <div style="font-size:11px;color:var(--color-blue);font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Your AI Shortlist</div>
+          <h2>Your top 3 university matches</h2>
+          <p style="font-size:14.5px;color:var(--text-muted);font-weight:500;margin-top:6px">Curated side-by-side using your grades, budget, subject, and goals</p>
+        </div>
+        
+        <div style="animation: fadeInUp 0.5s ease both;">
+          ${scored.map((u, i) => {
+        const pct = Math.round(70 + (u.sc / max) * 28);
+        const isTop = i === 0;
+
+        return `<div class="card${isTop ? ' top' : ''}">
+              <div class="card-border-glow"></div>
+              <div class="card-inner-glow"></div>
+              <div class="card-content">
+                ${isTop ? `<div style="font-family:'Outfit', sans-serif; font-size:11px;font-weight:800;color:var(--color-blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">⭐ Best match</div>` : ''}
+                <div style="display:flex;gap:16px;align-items:flex-start">
+                  <div class="rank">${i + 1}</div>
+                  <div style="flex:1">
+                    <div class="uni-name">${u.name}</div>
+                    <div class="uni-loc">📍 ${u.loc}</div>
+                    <span class="match-badge">${pct}% match</span>
+                    <p class="uni-desc">${u.desc}</p>
+                    <div class="tags-row">
+                      ${u.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+                    </div>
+                    <a href="${u.url}" target="_blank" class="website-link">Visit website <span class="arrow">→</span></a>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+      }).join('')}
+        </div>
+        
+        <button class="btn ghost" onclick="st={step:0,ans:{}};render()">Start over</button>`;
+
+      // Re-initialize dynamic spotlights on freshly rendered cards
+      initCardGlows();
+    }
+
+    function go(n) { st.step = n; render(); }
+    function pick(k, v) { st.ans[k] = v; render(); }
+    function next() { st.step < 5 ? go(st.step + 1) : go(6); }
+
+    // INITIAL LOAD
+    render();
+
+    // DYNAMIC LIGHT / DARK THEME SYSTEM
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const iconSun = document.getElementById('icon-sun');
+    const iconMoon = document.getElementById('icon-moon');
+    const htmlElement = document.documentElement;
+
+    // Load theme from localStorage or system preference
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+
+    setTheme(initialTheme);
+
+    themeToggleBtn.addEventListener('click', () => {
+      const currentTheme = htmlElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+    });
+
+    function setTheme(theme) {
+      htmlElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+
+      if (theme === 'dark') {
+        iconMoon.classList.add('active');
+        iconSun.classList.remove('active');
+      } else {
+        iconSun.classList.add('active');
+        iconMoon.classList.remove('active');
+      }
+    }
+  </script>
+</body>
+
+</html>
