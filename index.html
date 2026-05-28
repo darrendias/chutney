@@ -847,6 +847,12 @@
 
   <!-- INTERACTION SCRIPTS -->
   <script>
+    // Force scroll to top on page load and manual restoration
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
     // 1. Dynamic Card Spotlight Mouse Hover Glow Effect
     const cards = document.querySelectorAll('.card');
     cards.forEach(card => {
