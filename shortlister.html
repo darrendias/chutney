@@ -648,6 +648,157 @@
       }
     }
 
+    /* PREMIUM AI LOADER SYSTEM */
+    .ai-loader-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 40px auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ai-pulse-orb {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--color-blue-rgb), 0.15) 0%, rgba(var(--color-teal-rgb), 0.05) 100%);
+      border: 2px solid rgba(var(--color-blue-rgb), 0.25);
+      box-shadow: 0 0 30px rgba(var(--color-blue-rgb), 0.2), inset 0 0 15px rgba(var(--color-blue-rgb), 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: aiPulse 2s infinite alternate ease-in-out;
+    }
+
+    .ai-inner-core {
+      font-size: 32px;
+      animation: aiRotate 4s infinite linear;
+    }
+
+    .ai-scan-line {
+      position: absolute;
+      width: 110px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--color-blue) 50%, transparent 100%);
+      box-shadow: 0 0 12px var(--color-blue);
+      animation: aiScan 2s infinite ease-in-out;
+      opacity: 0.8;
+    }
+
+    @keyframes aiPulse {
+      0% {
+        transform: scale(0.95);
+        border-color: rgba(var(--color-blue-rgb), 0.2);
+        box-shadow: 0 0 20px rgba(var(--color-blue-rgb), 0.15);
+      }
+      100% {
+        transform: scale(1.05);
+        border-color: rgba(var(--color-teal-rgb), 0.5);
+        box-shadow: 0 0 40px rgba(var(--color-teal-rgb), 0.35);
+      }
+    }
+
+    @keyframes aiRotate {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.1); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    @keyframes aiScan {
+      0% { top: 10%; }
+      50% { top: 90%; }
+      100% { top: 10%; }
+    }
+
+    /* AI INSIGHT BOX IN CARDS */
+    .ai-insight-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(var(--color-blue-rgb), 0.03);
+      border: 1px solid rgba(var(--color-blue-rgb), 0.12);
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .card.top .ai-insight-box {
+      background: rgba(var(--color-blue-rgb), 0.05);
+      border-color: rgba(var(--color-blue-rgb), 0.2);
+    }
+
+    .ai-insight-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--color-blue) 0%, var(--color-teal) 100%);
+      color: #fff;
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      line-height: 1.1;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(var(--color-blue-rgb), 0.15);
+    }
+
+    .ai-insight-text {
+      color: var(--text-muted);
+      text-align: left;
+    }
+    .ai-insight-text strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    /* DYNAMIC VERDICT CARD */
+    .verdict-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px 24px;
+      margin-top: 24px;
+      box-shadow: var(--card-shadow);
+      animation: fadeInUp 0.4s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .verdict-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--color-blue) 0%, var(--color-teal) 100%);
+    }
+
+    .vt {
+      font-family: 'Outfit', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .vd {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      text-align: left;
+    }
+
     /* RESPONSIVE SCALING TWEAKS */
     @media(max-width: 440px) {
       .card-content {
@@ -719,6 +870,12 @@
 
   <!-- QUESTIONNAIRE & SCORING SCRIPTS -->
   <script>
+    // Force scroll to top on page load and manual restoration
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
     const QS = [
       { key: "subject", q: "What do you want to study?", opts: ["Computer Science / Tech", "Business & Management", "Engineering", "Medicine & Healthcare", "Law", "Arts, Design & Media", "Social Sciences", "Finance & Economics", "Psychology", "Other / Undecided"] },
       { key: "grade", q: "What are your expected grades?", opts: ["A*AA or equivalent", "AAB – ABB", "BBB – BBC", "BCC or below", "International / Non-UK qualification"] },
@@ -756,7 +913,122 @@
       return s;
     }
 
-    let st = { step: 0, ans: {} };
+    let st = { step: 0, ans: {}, loading: false };
+
+    function getCardInsight(uni, ans, rank) {
+      const topTag = uni.tags[0] || "prestigious brand";
+      const secondaryTag = uni.tags[1] || "high academic rating";
+      const tertiaryTag = uni.tags[2] || "modern amenities";
+
+      if (rank === 0) {
+        // Rank 1: Prime academic and priority alignment
+        if (ans.priority === "Graduate employment rate") {
+          return `<strong>Employment Powerhouse:</strong> As your top match, <strong>${uni.name}</strong> aligns with your priority of high employability. For <strong>${ans.subject}</strong>, our model tracks an exceptional placement rate, heavily supported by its status as a <strong>${topTag}</strong>.`;
+        }
+        if (ans.priority === "Research reputation") {
+          return `<strong>Elite Research Fit:</strong> <strong>${uni.name}</strong> is a flawless match for your focus on top-tier research. As a leading <strong>${topTag}</strong>, you will be study-matched with elite laboratories and publications in <strong>${ans.subject}</strong>.`;
+        }
+        if (ans.priority === "Campus life & community") {
+          return `<strong>Vibrant Hub Match:</strong> <strong>${uni.name}</strong> stands out as your optimal community match. Known for its <strong>${tertiaryTag}</strong>, it provides an outstanding social cohort for international students in <strong>${ans.subject}</strong>.`;
+        }
+        if (ans.priority === "City location & lifestyle") {
+          return `<strong>Location & Lifestyle Match:</strong> <strong>${uni.name}</strong> is situated in the prime area of <strong>${uni.loc}</strong>. It offers unmatched industry and lifestyle integration, perfectly supporting your studies in <strong>${ans.subject}</strong>.`;
+        }
+        if (ans.priority === "Scholarship & funding") {
+          return `<strong>High Financial Match:</strong> With a focus on funding, <strong>${uni.name}</strong> represents a premier balance of cost and prestige. It is matched to your budget bracket and historically awards selective international fee waivers.`;
+        }
+        return `<strong>Strategic Choice:</strong> <strong>${uni.name}</strong> is your ideal match, scoring top marks across your academic profile, budget, and <strong>${ans.subject}</strong> selection.`;
+      } 
+      
+      if (rank === 1) {
+        // Rank 2: Practical advantage and value trade-offs
+        if (ans.budget === "Under £25,000" || ans.budget === "Need maximum scholarship support") {
+          return `<strong>Financial Value Choice:</strong> While ranking #2, <strong>${uni.name}</strong> offers highly competitive tuition fees for <strong>${ans.subject}</strong>. In addition, its location in <strong>${uni.loc}</strong> yields a significantly lower cost of living than major metro areas.`;
+        }
+        return `<strong>Academic Alternative:</strong> <strong>${uni.name}</strong> serves as a robust secondary path. Recognized for its <strong>${secondaryTag}</strong>, it delivers high practical course value and specialized lab access for <strong>${ans.subject}</strong>.`;
+      }
+
+      // Rank 3: Wildcard / Niche Community strength
+      if (uni.loc === "London") {
+        return `<strong>Metro Niche Strength:</strong> Located in <strong>London</strong>, this institution is recognized for <strong>${tertiaryTag}</strong>, giving you a friendly, focused study environment with lower competition for local placements.`;
+      }
+      return `<strong>Niche Strength & Vibe:</strong> <strong>${uni.name}</strong> is featured as a stellar wildcard. With its <strong>${topTag}</strong> and friendly vibe, it provides high support and a highly engaging student experience in <strong>${ans.subject}</strong> in <strong>${uni.loc}</strong>.`;
+    }
+
+    function getAIVerdict(ans, matches) {
+      const top = matches[0];
+      const second = matches[1];
+      
+      let priorityAnalysis = "";
+      if (ans.priority === "Graduate employment rate") {
+        priorityAnalysis = `Because you prioritized <strong>employment outcomes</strong>, our model heavily weighted industry partnerships and historical graduate salaries. <strong>${top.name}</strong> stands out here, particularly for <strong>${ans.subject}</strong>, with its alumni network frequently feeding into top-tier UK employers.`;
+      } else if (ans.priority === "Research reputation") {
+        priorityAnalysis = `Since <strong>academic research</strong> is your top priority, we focused on institutional citation impact and REF (Research Excellence Framework) rankings. <strong>${top.name}</strong> is a world-class research powerhouse where you will be taught by leading minds in <strong>${ans.subject}</strong>.`;
+      } else if (ans.priority === "Campus life & community") {
+        priorityAnalysis = `Prioritizing a strong <strong>student community</strong>, we matched you with universities renowned for student satisfaction and active student unions. <strong>${top.name}</strong> offers an incredibly vibrant campus environment where international student groups are highly integrated.`;
+      } else if (ans.priority === "City location & lifestyle") {
+        priorityAnalysis = `With <strong>city lifestyle</strong> as a primary factor, <strong>${top.name}</strong> is perfectly positioned to offer a rich cultural experience alongside your studies in <strong>${ans.subject}</strong>, offering excellent local industry access.`;
+      } else if (ans.priority === "Scholarship & funding") {
+        priorityAnalysis = `As your focus is on <strong>funding</strong>, our engine analyzed scholarship availability for international students. Both <strong>${top.name}</strong> and <strong>${second.name}</strong> have historically offered generous fee waivers and bursaries for students from your profile.`;
+      } else {
+        priorityAnalysis = `With a focus on <strong>learning environment</strong>, our matchmaker prioritized universities with favorable student-to-staff ratios in <strong>${ans.subject}</strong>, ensuring you get the personal academic support needed to excel.`;
+      }
+
+      let budgetAnalysis = "";
+      if (ans.budget === "Under £25,000" || ans.budget === "Need maximum scholarship support") {
+        budgetAnalysis = `Given your budget constraints, we highly recommend looking into early scholarship deadlines. While <strong>${top.name}</strong> offers a premium brand, you might find <strong>${second.name}</strong> or regional universities to have a more sustainable total cost of living.`;
+      } else {
+        budgetAnalysis = `Your budget allocation is healthy and covers the tuition rates of prestigious Russell Group institutions, allowing you to focus purely on academic fit and campus culture.`;
+      }
+
+      let gradeAnalysis = "";
+      if (ans.grade === "A*AA or equivalent") {
+        gradeAnalysis = `With your outstanding academic grades, you have a highly competitive profile. You are well-positioned to target elite institutions like <strong>${top.name}</strong> with a strong chance of acceptance, provided your personal statement is robust.`;
+      } else if (ans.grade === "AAB – ABB") {
+        gradeAnalysis = `Your academic profile is strong and meets the entry requirements for top Russell Group universities. Focus on writing a compelling personal statement that connects your interest in <strong>${ans.subject}</strong> to current industry trends.`;
+      } else {
+        gradeAnalysis = `For your academic profile, we matched you with universities that offer excellent support structures, generous entry pathways, and highly practical courses in <strong>${ans.subject}</strong> to kickstart your career.`;
+      }
+
+      return `
+        <div class="vt">✨ AI Matchmaker Verdict</div>
+        <div class="vd" style="margin-bottom: 16px;">
+          Our AI agent analyzed <strong>140+ data points</strong> for <strong>${ans.subject}</strong> entry in the UK. 
+          We have synthesized a tailored strategic path for you:
+        </div>
+        <p style="font-size:14.5px;color:var(--text-muted);line-height:1.65;margin-bottom:12px;text-align:left;">${priorityAnalysis}</p>
+        <p style="font-size:14.5px;color:var(--text-muted);line-height:1.65;margin-bottom:12px;text-align:left;">${budgetAnalysis}</p>
+        <p style="font-size:14.5px;color:var(--text-muted);line-height:1.65;text-align:left;">${gradeAnalysis}</p>
+      `;
+    }
+
+    function triggerAILoader() {
+      st.loading = true;
+      render();
+
+      const loadingMessages = [
+        "Ingesting academic profile...",
+        "Querying matching matrix for " + st.ans.subject + "...",
+        "Evaluating entry grade standards for " + st.ans.grade + "...",
+        "Filtering campus locations in " + st.ans.city + "...",
+        "Analyzing visa & scholarship eligibility...",
+        "Synthesizing personal AI recommendation..."
+      ];
+
+      let msgIndex = 0;
+      const interval = setInterval(() => {
+        const lbl = document.getElementById('ai-loading-lbl');
+        if (lbl && msgIndex < loadingMessages.length) {
+          lbl.textContent = loadingMessages[msgIndex++];
+        }
+      }, 500);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        st.loading = false;
+        go(6);
+      }, 3000);
+    }
 
     // Dynamic Card Spotlight Mouse Hover Glow Init
     function initCardGlows() {
@@ -772,8 +1044,31 @@
       });
     }
 
+    let lastStep = -1;
     function render() {
       const el = document.getElementById('root');
+
+      if (st.step !== lastStep) {
+        window.scrollTo(0, 0);
+        lastStep = st.step;
+      }
+
+      if (st.loading) {
+        el.innerHTML = `
+          <div style="text-align:center; padding: 48px 20px; animation: fadeInUp 0.5s ease both;">
+            <div class="ai-loader-container">
+              <div class="ai-pulse-orb">
+                <div class="ai-inner-core">✨</div>
+              </div>
+              <div class="ai-scan-line"></div>
+            </div>
+            <h3 style="font-family:'Outfit', sans-serif; font-size:22px; font-weight:900; color:var(--text); margin-top:28px;">UniMatch AI Matchmaker</h3>
+            <p id="ai-loading-lbl" style="font-size:14.5px; color:var(--color-blue); font-weight:700; margin-top:12px; min-height: 24px; letter-spacing: 0.02em;">Processing academic inputs...</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-top:8px;">Running matching models over 140+ UK institutions...</p>
+          </div>
+        `;
+        return;
+      }
 
       if (st.step === 0) {
         el.innerHTML = `
@@ -844,11 +1139,20 @@
                       ${u.tags.map(t => `<span class="tag">${t}</span>`).join('')}
                     </div>
                     <a href="${u.url}" target="_blank" class="website-link">Visit website <span class="arrow">→</span></a>
+                    
+                    <div class="ai-insight-box">
+                      <span class="ai-insight-badge">✨ AI Insight</span>
+                      <span class="ai-insight-text">${getCardInsight(u, st.ans, i)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>`;
       }).join('')}
+        </div>
+        
+        <div class="verdict-box">
+          ${getAIVerdict(st.ans, scored)}
         </div>
         
         <button class="btn ghost" onclick="st={step:0,ans:{}};render()">Start over</button>`;
@@ -859,7 +1163,7 @@
 
     function go(n) { st.step = n; render(); }
     function pick(k, v) { st.ans[k] = v; render(); }
-    function next() { st.step < 5 ? go(st.step + 1) : go(6); }
+    function next() { st.step < 5 ? go(st.step + 1) : triggerAILoader(); }
 
     // INITIAL LOAD
     render();
