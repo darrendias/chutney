@@ -613,6 +613,69 @@
         font-size: 13px;
       }
     }
+    /* PREMIUM AI LOADER SYSTEM */
+    .ai-loader-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 40px auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ai-pulse-orb {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--color-teal-rgb), 0.15) 0%, rgba(var(--color-green-rgb), 0.05) 100%);
+      border: 2px solid rgba(var(--color-teal-rgb), 0.25);
+      box-shadow: 0 0 30px rgba(var(--color-teal-rgb), 0.2), inset 0 0 15px rgba(var(--color-teal-rgb), 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: aiPulse 2s infinite alternate ease-in-out;
+    }
+
+    .ai-inner-core {
+      font-size: 32px;
+      animation: aiRotate 4s infinite linear;
+    }
+
+    .ai-scan-line {
+      position: absolute;
+      width: 110px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--color-teal) 50%, transparent 100%);
+      box-shadow: 0 0 12px var(--color-teal);
+      animation: aiScan 2s infinite ease-in-out;
+      opacity: 0.8;
+    }
+
+    @keyframes aiPulse {
+      0% {
+        transform: scale(0.95);
+        border-color: rgba(var(--color-teal-rgb), 0.2);
+        box-shadow: 0 0 20px rgba(var(--color-teal-rgb), 0.15);
+      }
+      100% {
+        transform: scale(1.05);
+        border-color: rgba(var(--color-green-rgb), 0.5);
+        box-shadow: 0 0 40px rgba(var(--color-green-rgb), 0.35);
+      }
+    }
+
+    @keyframes aiRotate {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.1); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    @keyframes aiScan {
+      0% { top: 10%; }
+      50% { top: 90%; }
+      100% { top: 10%; }
+    }
   </style>
 </head>
 
@@ -676,6 +739,12 @@
 
   <!-- TIMELINE CALCULATOR ENGINE -->
   <script>
+    // Force scroll to top on page load and manual restoration
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
     const COUNTRY_NOTES = {
       "India": "Indian students must book a biometrics appointment at a VFS Global centre. Processing typically takes 3–8 weeks. The IHS surcharge is required and currently £776/year. Ensure your funds have been in your account for 28 consecutive days.",
       "Nigeria": "Nigerian applicants often face longer processing times (6–12 weeks). Book your biometrics at the UK Visa Application Centre early. Demonstrate strong ties to Nigeria (family, property, job) to reassure visa officers.",
@@ -736,13 +805,30 @@
       }));
     }
 
-    let country = "", intake = "", intakeYear = 2025, level = "";
+    let country = "", intake = "", intakeYear = 2025, level = "", loading = false;
 
     function update() { render(); }
 
     function render() {
       const canGo = country && intake && level;
       const el = document.getElementById('app');
+
+      if (loading) {
+        el.innerHTML = `
+          <div style="text-align:center; padding: 48px 20px; animation: fadeInUp 0.5s ease both;">
+            <div class="ai-loader-container">
+              <div class="ai-pulse-orb">
+                <div class="ai-inner-core">🗓️</div>
+              </div>
+              <div class="ai-scan-line"></div>
+            </div>
+            <h3 style="font-family:'Outfit', sans-serif; font-size:22px; font-weight:900; color:var(--text); margin-top:28px;">VisaPath AI Compliance Engine</h3>
+            <p id="ai-loading-lbl" style="font-size:14.5px; color:var(--color-teal); font-weight:700; margin-top:12px; min-height: 24px; letter-spacing: 0.02em;">Parsing application criteria...</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-top:8px;">Running matching models over UKVI databases...</p>
+          </div>
+        `;
+        return;
+      }
 
       if (!el._showResults) {
         el.innerHTML = `
@@ -780,7 +866,39 @@
       }
     }
 
+    function triggerAILoader() {
+      loading = true;
+      render();
+
+      const loadingMessages = [
+        "Analyzing nationality criteria for " + country + "...",
+        "Validating " + level + " intake schedules...",
+        "Querying UKVI visa guidance libraries...",
+        "Calculating CAS release & finance timelines...",
+        "Synthesizing customized compliance roadmap..."
+      ];
+
+      let msgIndex = 0;
+      const interval = setInterval(() => {
+        const lbl = document.getElementById('ai-loading-lbl');
+        if (lbl && msgIndex < loadingMessages.length) {
+          lbl.textContent = loadingMessages[msgIndex++];
+        }
+      }, 500);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        loading = false;
+        renderTimeline();
+      }, 3000);
+    }
+
     function showTimeline() {
+      triggerAILoader();
+    }
+
+    function renderTimeline() {
+      window.scrollTo(0, 0);
       const timeline = buildTimeline(country, intake, intakeYear, level);
       const note = COUNTRY_NOTES[country] || "Allow 4–8 weeks for processing and book your biometrics appointment promptly.";
       const el = document.getElementById('app');
@@ -819,7 +937,7 @@
           </div>`).join('')}
         </div>
         
-        <button class="btn ghost" onclick="document.getElementById('app')._showResults=false;render()">← Generate another timeline</button>`;
+        <button class="btn ghost" onclick="window.scrollTo(0, 0); document.getElementById('app')._showResults=false;render()">← Generate another timeline</button>`;
     }
 
     // INITIAL LOAD
