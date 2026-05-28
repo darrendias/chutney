@@ -742,6 +742,69 @@
         transform: translateY(0);
       }
     }
+    /* PREMIUM AI LOADER SYSTEM */
+    .ai-loader-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 40px auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ai-pulse-orb {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--color-purple-rgb), 0.15) 0%, rgba(var(--color-blue-rgb), 0.05) 100%);
+      border: 2px solid rgba(var(--color-purple-rgb), 0.25);
+      box-shadow: 0 0 30px rgba(var(--color-purple-rgb), 0.2), inset 0 0 15px rgba(var(--color-purple-rgb), 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: aiPulse 2s infinite alternate ease-in-out;
+    }
+
+    .ai-inner-core {
+      font-size: 32px;
+      animation: aiRotate 4s infinite linear;
+    }
+
+    .ai-scan-line {
+      position: absolute;
+      width: 110px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--color-purple) 50%, transparent 100%);
+      box-shadow: 0 0 12px var(--color-purple);
+      animation: aiScan 2s infinite ease-in-out;
+      opacity: 0.8;
+    }
+
+    @keyframes aiPulse {
+      0% {
+        transform: scale(0.95);
+        border-color: rgba(var(--color-purple-rgb), 0.2);
+        box-shadow: 0 0 20px rgba(var(--color-purple-rgb), 0.15);
+      }
+      100% {
+        transform: scale(1.05);
+        border-color: rgba(var(--color-blue-rgb), 0.5);
+        box-shadow: 0 0 40px rgba(var(--color-blue-rgb), 0.35);
+      }
+    }
+
+    @keyframes aiRotate {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.1); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    @keyframes aiScan {
+      0% { top: 10%; }
+      50% { top: 90%; }
+      100% { top: 10%; }
+    }
   </style>
 </head>
 
@@ -805,6 +868,12 @@
 
   <!-- CALCULATOR & COMPARISON ENGINE -->
   <script>
+    // Force scroll to top on page load and manual restoration
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
     const CITIES = [
       { name: "London", emoji: "🏙️" },
       { name: "Manchester", emoji: "🐝" },
@@ -861,7 +930,7 @@
 
     // Columns styling colors using dynamic system variables
     const COLORS = ["var(--color-purple)", "var(--color-blue)", "var(--color-red)", "var(--color-teal)"];
-    let selected = [], lifestyle = 1;
+    let selected = [], lifestyle = 1, loading = false;
 
     function toggleCity(name) {
       if (selected.includes(name)) selected = selected.filter(c => c !== name);
@@ -872,6 +941,24 @@
     function renderForm() {
       const el = document.getElementById('app');
       const can = selected.length >= 2;
+
+      if (loading) {
+        el.innerHTML = `
+          <div style="text-align:center; padding: 48px 20px; animation: fadeInUp 0.5s ease both;">
+            <div class="ai-loader-container">
+              <div class="ai-pulse-orb">
+                <div class="ai-inner-core">💸</div>
+              </div>
+              <div class="ai-scan-line"></div>
+            </div>
+            <h3 style="font-family:'Outfit', sans-serif; font-size:22px; font-weight:900; color:var(--text); margin-top:28px;">CostCheck AI Pricing Engine</h3>
+            <p id="ai-loading-lbl" style="font-size:14.5px; color:var(--color-purple); font-weight:700; margin-top:12px; min-height: 24px; letter-spacing: 0.02em;">Parsing pricing inputs...</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-top:8px;">Running matching models over UK regional databases...</p>
+          </div>
+        `;
+        return;
+      }
+
       el.innerHTML = `
         <div style="animation: fadeInUp 0.4s ease both;">
           <h2>Compare UK cities</h2>
@@ -901,7 +988,39 @@
         </div>`;
     }
 
+    function triggerAILoader() {
+      loading = true;
+      renderForm();
+
+      const loadingMessages = [
+        "Analyzing lifestyle selection...",
+        "Querying cost databases for " + selected.join(', ') + "...",
+        "Validating housing index rates...",
+        "Calculating monthly grocery & utility baskets...",
+        "Synthesizing budget & tuition summaries..."
+      ];
+
+      let msgIndex = 0;
+      const interval = setInterval(() => {
+        const lbl = document.getElementById('ai-loading-lbl');
+        if (lbl && msgIndex < loadingMessages.length) {
+          lbl.textContent = loadingMessages[msgIndex++];
+        }
+      }, 500);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        loading = false;
+        renderResults();
+      }, 3000);
+    }
+
     function showResults() {
+      triggerAILoader();
+    }
+
+    function renderResults() {
+      window.scrollTo(0, 0);
       const cities = selected.map(name => {
         const d = COSTS[name][lifestyle];
         const total = d.reduce((a, b) => a + b, 0);
@@ -1006,7 +1125,7 @@
           </div>
         </div>
         
-        <button class="btn ghost" onclick="renderForm()">Compare different cities</button>`;
+        <button class="btn ghost" onclick="window.scrollTo(0, 0); renderForm()">Compare different cities</button>`;
 
       document.getElementById('app').innerHTML = html;
     }
