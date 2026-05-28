@@ -861,6 +861,70 @@
       }
     }
 
+    /* PREMIUM AI LOADER SYSTEM */
+    .ai-loader-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 40px auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ai-pulse-orb {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--color-red-rgb), 0.15) 0%, rgba(212, 146, 10, 0.05) 100%);
+      border: 2px solid rgba(var(--color-red-rgb), 0.25);
+      box-shadow: 0 0 30px rgba(var(--color-red-rgb), 0.2), inset 0 0 15px rgba(var(--color-red-rgb), 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: aiPulse 2s infinite alternate ease-in-out;
+    }
+
+    .ai-inner-core {
+      font-size: 32px;
+      animation: aiRotate 4s infinite linear;
+    }
+
+    .ai-scan-line {
+      position: absolute;
+      width: 110px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--color-red) 50%, transparent 100%);
+      box-shadow: 0 0 12px var(--color-red);
+      animation: aiScan 2s infinite ease-in-out;
+      opacity: 0.8;
+    }
+
+    @keyframes aiPulse {
+      0% {
+        transform: scale(0.95);
+        border-color: rgba(var(--color-red-rgb), 0.2);
+        box-shadow: 0 0 20px rgba(var(--color-red-rgb), 0.15);
+      }
+      100% {
+        transform: scale(1.05);
+        border-color: rgba(212, 146, 10, 0.5);
+        box-shadow: 0 0 40px rgba(212, 146, 10, 0.35);
+      }
+    }
+
+    @keyframes aiRotate {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.1); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    @keyframes aiScan {
+      0% { top: 10%; }
+      50% { top: 90%; }
+      100% { top: 10%; }
+    }
+
     @media(max-width: 400px) {
       .logo-letter-chutney {
         width: 32px;
@@ -927,6 +991,12 @@
 
   <!-- QUESTIONNAIRE ENGINE & LOGIC -->
   <script>
+    // Force scroll to top on page load and manual restoration
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
     const R = "#E8420A", Y = "#D4920A", G = "#1E7A45", P = "#7B3FC4", B = "#1A5FA8", TL = "#0F6B5A";
     const LETTER_COLORS = [R, Y, G, R, Y, G, R];
 
@@ -989,7 +1059,7 @@
       }).sort((a, b) => b.sc - a.sc).slice(0, 6);
     }
 
-    let st = { step: 0, name: "", uni: "", homeState: "", area: "", ints: [], goals: [] };
+    let st = { step: 0, name: "", uni: "", homeState: "", area: "", ints: [], goals: [], loading: false };
 
     function logoHTML() {
       const letters = "chutney".split('');
@@ -1016,9 +1086,32 @@
       });
     }
 
+    let lastStep = -1;
     function render() {
       const el = document.getElementById('screen');
       const s = st;
+
+      if (s.step !== lastStep) {
+        window.scrollTo(0, 0);
+        lastStep = s.step;
+      }
+
+      if (st.loading) {
+        el.innerHTML = `
+          <div style="text-align:center; padding: 48px 20px; animation: fadeInUp 0.5s ease both;">
+            <div class="ai-loader-container">
+              <div class="ai-pulse-orb">
+                <div class="ai-inner-core">🌶️</div>
+              </div>
+              <div class="ai-scan-line"></div>
+            </div>
+            <h3 style="font-family:'Outfit', sans-serif; font-size:22px; font-weight:900; color:var(--text); margin-top:28px;">Chutney Circles Matchmaker</h3>
+            <p id="ai-loading-lbl" style="font-size:14.5px; color:var(--color-red); font-weight:700; margin-top:12px; min-height: 24px; letter-spacing: 0.02em;">Processing student credentials...</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-top:8px;">Running matching algorithms over 40+ dynamic circles...</p>
+          </div>
+        `;
+        return;
+      }
 
       if (s.step === 0) {
         el.innerHTML = `<div style="text-align:center;padding-top:24px; animation: fadeInUp 0.5s ease both;">
@@ -1203,8 +1296,37 @@
       st.goals = st.goals.includes(g) ? st.goals.filter(x => x !== g) : [...st.goals, g];
       render();
     }
-    function doMatch() { st.step = 6; render(); }
-    function reset() { st = { step: 0, name: "", uni: "", homeState: "", area: "", ints: [], goals: [] }; render(); }
+    function triggerAILoader() {
+      st.loading = true;
+      render();
+
+      const loadingMessages = [
+        "Analyzing profile inputs...",
+        "Querying London circles database...",
+        "Evaluating " + st.ints.length + " shared interests...",
+        "Filtering campus matches at " + st.uni + "...",
+        "Matching social goals in " + st.area + "...",
+        "Synthesizing spice compatibility index..."
+      ];
+
+      let msgIndex = 0;
+      const interval = setInterval(() => {
+        const lbl = document.getElementById('ai-loading-lbl');
+        if (lbl && msgIndex < loadingMessages.length) {
+          lbl.textContent = loadingMessages[msgIndex++];
+        }
+      }, 500);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        st.loading = false;
+        st.step = 6;
+        render();
+      }, 3000);
+    }
+
+    function doMatch() { triggerAILoader(); }
+    function reset() { st = { step: 0, name: "", uni: "", homeState: "", area: "", ints: [], goals: [], loading: false }; render(); }
 
     // INITIAL LOAD
     render();
