@@ -1,4 +1,4 @@
-# 🎓 Darren’s EdTech Tools Suite — Built for International Students
+# 🎓 Darren’s EdTech Tools Suite. Built for International Students
 
 A modern, ultra-premium, and fully responsive suite of four unified tools designed to guide international students through their journey to and across the United Kingdom. 
 
@@ -64,7 +64,6 @@ This suite was built to prove that premium, ultra-modern web experiences do not 
 *   **Core Logic:** Pure, Vanilla JavaScript (ES6+).
 *   **Styling & FX:** Advanced CSS3 Custom Properties (variables), Flexbox, CSS Grid layouts, backdrop filters, and custom cubic-bezier transitions.
 *   **Zero Dependencies:** No React, no Tailwind, no external packages. Pages load instantly, cache easily, and require zero configuration to run.
-*   **Inline Assets:** Equipped with an ultra-lightweight, uniform academic favicon (`🎓`) utilizing a browser-native SVG URL representation. No external icon assets required.
     ```html
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
     ```
