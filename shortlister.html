@@ -98,6 +98,13 @@
       position: relative;
     }
 
+    /* Prevent text selection and drag on interactive UI elements to fix cursor flash */
+    a, button, .card, .btn, .row-btn, .chip, .cc, .theme-toggle-btn, .dd-back-btn, .opt, .ti {
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: none;
+    }
+
     /* BACKGROUND DESIGN ELEMENTS */
     .bg-grid-overlay {
       position: fixed;
@@ -230,25 +237,50 @@
       gap: 18px;
     }
 
-    .dd-nav-link {
+    /* premium back button — tinted with this tool's own accent colour on
+       hover, so it ties into the same colour identity as the DD logo mark */
+    .dd-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 14px 0 11px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-muted);
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-muted);
       text-decoration: none;
       white-space: nowrap;
-      transition: color .2s;
+      box-shadow: var(--card-shadow);
+      transition: border-color .25s, background .25s, color .25s, box-shadow .25s, transform .15s;
     }
 
-    .dd-nav-link:hover {
-      color: #FF5520;
+    .dd-back-btn svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    .dd-back-btn:hover {
+      border-color: var(--color-blue);
+      color: var(--color-blue);
+      background: rgba(var(--color-blue-rgb), 0.1);
+      box-shadow: 0 4px 16px rgba(var(--color-blue-rgb), 0.22);
+    }
+
+    .dd-back-btn:hover svg {
+      transform: translateX(-2px);
+    }
+
+    .dd-back-btn:active {
+      transform: scale(0.94);
     }
 
     @media (max-width: 360px) {
-      .dd-nav-link {
-        font-size: 12px;
-      }
-
       .dd-nav-wordmark {
         font-size: 13px;
       }
@@ -256,6 +288,76 @@
       .dd-nav-right {
         gap: 12px;
       }
+
+      .dd-back-btn span {
+        display: none;
+      }
+
+      .dd-back-btn {
+        padding: 0 9px;
+      }
+    }
+
+    /* ── premium custom cursor — real mouse/trackpad only ─────────────
+       Touch devices are completely untouched: cursor:none only applies
+       inside this same media feature, so nothing changes on mobile.    */
+    @media (hover: hover) and (pointer: fine) {
+
+      html.dd-cursor-on,
+      html.dd-cursor-on * {
+        cursor: none !important;
+      }
+    }
+
+    .dd-cursor-dot,
+    .dd-cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999999;
+      border-radius: 50%;
+      opacity: 0;
+      will-change: transform;
+    }
+
+    .dd-cursor-dot.is-visible,
+    .dd-cursor-ring.is-visible {
+      opacity: 1;
+    }
+
+    .dd-cursor-dot.is-leaving,
+    .dd-cursor-ring.is-leaving {
+      opacity: 0;
+    }
+
+    .dd-cursor-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--color-blue);
+      transition: opacity .2s;
+    }
+
+    .dd-cursor-ring {
+      width: 34px;
+      height: 34px;
+      border: 1.5px solid rgba(var(--color-blue-rgb), 0.55);
+      box-shadow: 0 0 16px rgba(var(--color-blue-rgb), 0.22);
+      transition: width .3s cubic-bezier(.34, 1.56, .64, 1), height .3s cubic-bezier(.34, 1.56, .64, 1),
+        background .3s, border-color .3s, box-shadow .3s, opacity .2s;
+    }
+
+    .dd-cursor-ring.is-active {
+      width: 52px;
+      height: 52px;
+      background: rgba(var(--color-blue-rgb), 0.1);
+      border-color: rgba(var(--color-blue-rgb), 0.85);
+      box-shadow: 0 0 26px rgba(var(--color-blue-rgb), 0.35);
+    }
+
+    .dd-cursor-ring.is-pressed {
+      width: 26px;
+      height: 26px;
     }
 
 
@@ -328,37 +430,41 @@
       z-index: 10;
     }
 
-    /* ON-SCREEN BRAND */
+    /* BRAND LOGO & TAGLINE ON SCREEN */
     .app-brand {
-      margin-bottom: 32px;
+      margin-bottom: 28px;
       animation: fadeInUp 0.4s ease both;
+      text-align: center;
     }
 
     .logo-main {
       font-family: 'Outfit', sans-serif;
-      font-size: 30px;
+      font-size: 32px;
       font-weight: 900;
       color: var(--color-blue);
       letter-spacing: -0.03em;
-      margin-bottom: 6px;
+      margin-bottom: 24px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      gap: 12px;
+      padding-right: 44px; /* Counter-balances the 32px SVG + 12px gap to perfectly center the logo text */
     }
 
     .tagline {
-      font-size: 15px;
+      font-size: 16.5px;
       color: var(--text-muted);
       font-weight: 500;
+      letter-spacing: -0.01em;
     }
 
     /* TYPOGRAPHY */
     h2 {
       font-family: 'Outfit', sans-serif;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
       color: var(--text);
-      margin-bottom: 8px;
+      margin-bottom: 16px;
       letter-spacing: -0.02em;
     }
 
@@ -366,7 +472,7 @@
       font-size: 15.5px;
       color: var(--text-muted);
       line-height: 1.6;
-      margin-bottom: 32px;
+      margin-bottom: 48px;
     }
 
     .step-label {
@@ -893,7 +999,13 @@
         <span class="dd-nav-wordmark">Darren Dias</span>
       </a>
       <div class="dd-nav-right">
-        <a href="index.html" class="dd-nav-link">← All tools</a>
+        <a href="index.html" class="dd-back-btn" aria-label="Back to all tools">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          <span>Back</span>
+        </a>
         <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
           <span class="theme-icons">
             <!-- Moon Icon (Dark Mode) -->
@@ -1112,7 +1224,9 @@
           <div style="text-align:center; padding: 48px 20px; animation: fadeInUp 0.5s ease both;">
             <div class="ai-loader-container">
               <div class="ai-pulse-orb">
-                <div class="ai-inner-core">✨</div>
+                <div class="ai-inner-core">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-blue);"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                </div>
               </div>
               <div class="ai-scan-line"></div>
             </div>
@@ -1126,14 +1240,18 @@
 
       if (st.step === 0) {
         el.innerHTML = `
-          <div style="animation: fadeInUp 0.4s ease both;">
+          <div style="animation: fadeInUp 0.4s ease both; text-align: center; padding: 20px 0;">
             <div class="app-brand">
-              <div class="logo-main">🎓 UniMatch AI</div>
+              <div class="logo-main" style="display:flex; align-items:center; justify-content:center; gap:12px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-blue);"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                UniMatch AI
+              </div>
               <div class="tagline">Find your best-fit UK university in 60 seconds</div>
             </div>
+            <div style="height: 2px; width: 180px; background: var(--color-blue); margin: 0 auto 32px auto; border-radius: 2px; opacity: 0.25;"></div>
             <h2>Which UK university is right for you?</h2>
-            <p class="sub">Answer 5 quick questions and our matchmaker will shortlist your top 3 universities. Each with personalised reasons why each one fits your academic profile, budget, and lifestyle.</p>
-            <button class="btn" onclick="go(1)">Start matching →</button>
+            <p class="sub" style="margin-left: auto; margin-right: auto; max-width: 440px;">Answer 5 quick questions and our matchmaker will shortlist your top 3 universities. Each with personalised reasons why each one fits your academic profile, budget, and lifestyle.</p>
+            <button class="btn" style="margin: 0 auto; max-width: 240px; padding: 18px;" onclick="go(1)">Start matching →</button>
           </div>`;
         return;
       }
@@ -1253,6 +1371,70 @@
         iconMoon.classList.remove('active');
       }
     }
+
+    /* ── premium custom cursor ──────────────────────────────────────
+       Dot tracks the pointer exactly; the ring trails behind with a
+       little easing for a smooth, fluid feel. Scales up over anything
+       clickable, scales down on press, and never touches touch devices
+       at all — gated behind the same media feature the CSS uses.      */
+    (function initPremiumCursor() {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+      document.documentElement.classList.add('dd-cursor-on');
+
+      var dot = document.createElement('div');
+      dot.className = 'dd-cursor-dot';
+      var ring = document.createElement('div');
+      ring.className = 'dd-cursor-ring';
+      document.body.appendChild(dot);
+      document.body.appendChild(ring);
+
+      var mx = 0, my = 0, rx = 0, ry = 0, hasMoved = false;
+
+      function placeDot() {
+        dot.style.transform = 'translate(' + mx + 'px, ' + my + 'px) translate(-50%, -50%)';
+      }
+
+      window.addEventListener('mousemove', function (e) {
+        mx = e.clientX;
+        my = e.clientY;
+        if (!hasMoved) {
+          hasMoved = true;
+          rx = mx;
+          ry = my;
+          dot.classList.add('is-visible');
+          ring.classList.add('is-visible');
+        }
+        placeDot();
+      });
+
+      (function tick() {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        ring.style.transform = 'translate(' + rx + 'px, ' + ry + 'px) translate(-50%, -50%)';
+        requestAnimationFrame(tick);
+      })();
+
+      var interactiveSel = 'a, button, input, select, textarea, label, summary, [role="button"], [onclick]';
+
+      document.addEventListener('mouseover', function (e) {
+        if (e.target.closest(interactiveSel)) ring.classList.add('is-active');
+      });
+      document.addEventListener('mouseout', function (e) {
+        if (e.target.closest(interactiveSel)) ring.classList.remove('is-active');
+      });
+      document.addEventListener('mousedown', function () { ring.classList.add('is-pressed'); });
+      document.addEventListener('mouseup', function () { ring.classList.remove('is-pressed'); });
+
+      document.addEventListener('mouseleave', function () {
+        dot.classList.add('is-leaving');
+        ring.classList.add('is-leaving');
+      });
+      document.addEventListener('mouseenter', function () {
+        dot.classList.remove('is-leaving');
+        ring.classList.remove('is-leaving');
+      });
+    })();
   </script>
 </body>
 

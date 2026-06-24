@@ -38,6 +38,7 @@
       --card-shadow: 0 10px 30px -10px rgba(138, 120, 102, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
       --card-shadow-hover: 0 20px 45px -12px rgba(138, 120, 102, 0.16), 0 4px 12px rgba(138, 120, 102, 0.04);
       --header-bg: rgba(251, 249, 246, 0.8);
+      --dropdown-bg: rgba(251, 249, 246, 0.75);
       --footer-hr: rgba(220, 210, 198, 0.5);
 
       /* Accent Colors - Light Theme */
@@ -69,6 +70,7 @@
       --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
       --card-shadow-hover: 0 25px 50px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
       --header-bg: rgba(13, 11, 10, 0.8);
+      --dropdown-bg: rgba(13, 11, 10, 0.75);
       --footer-hr: rgba(255, 255, 255, 0.06);
 
       /* Accent Colors - Dark Theme */
@@ -96,6 +98,13 @@
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
+    }
+
+    /* Prevent text selection and drag on interactive UI elements to fix cursor flash */
+    a, button, .card, .btn, .row-btn, .chip, .cc, .theme-toggle-btn, .dd-back-btn, .opt, .ti {
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: none;
     }
 
     /* BACKGROUND DESIGN ELEMENTS */
@@ -230,25 +239,50 @@
       gap: 18px;
     }
 
-    .dd-nav-link {
+    /* premium back button — tinted with this tool's own accent colour on
+       hover, so it ties into the same colour identity as the DD logo mark */
+    .dd-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 14px 0 11px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-muted);
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-muted);
       text-decoration: none;
       white-space: nowrap;
-      transition: color .2s;
+      box-shadow: var(--card-shadow);
+      transition: border-color .25s, background .25s, color .25s, box-shadow .25s, transform .15s;
     }
 
-    .dd-nav-link:hover {
-      color: #FF5520;
+    .dd-back-btn svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    .dd-back-btn:hover {
+      border-color: var(--color-teal);
+      color: var(--color-teal);
+      background: rgba(var(--color-teal-rgb), 0.1);
+      box-shadow: 0 4px 16px rgba(var(--color-teal-rgb), 0.22);
+    }
+
+    .dd-back-btn:hover svg {
+      transform: translateX(-2px);
+    }
+
+    .dd-back-btn:active {
+      transform: scale(0.94);
     }
 
     @media (max-width: 360px) {
-      .dd-nav-link {
-        font-size: 12px;
-      }
-
       .dd-nav-wordmark {
         font-size: 13px;
       }
@@ -256,6 +290,77 @@
       .dd-nav-right {
         gap: 12px;
       }
+
+      .dd-back-btn span {
+        display: none;
+      }
+
+      .dd-back-btn {
+        padding: 0 9px;
+      }
+    }
+
+    /* ── premium custom cursor — real mouse/trackpad only ─────────────
+       Touch devices are completely untouched: cursor:none only applies
+       inside this same media feature, so nothing changes on mobile.    */
+    @media (hover: hover) and (pointer: fine) {
+
+      html.dd-cursor-on,
+      html.dd-cursor-on * {
+        cursor: none !important;
+      }
+    }
+
+    .dd-cursor-dot,
+    .dd-cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999999;
+      border-radius: 50%;
+      opacity: 0;
+      will-change: transform;
+    }
+
+    .dd-cursor-dot.is-visible,
+    .dd-cursor-ring.is-visible {
+      opacity: 1;
+    }
+
+    .dd-cursor-dot.is-leaving,
+    .dd-cursor-ring.is-leaving {
+      opacity: 0;
+    }
+
+    .dd-cursor-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--color-teal);
+      transition: opacity .2s;
+    }
+
+    .dd-cursor-ring {
+      width: 34px;
+      height: 34px;
+      border: 1.5px solid rgba(var(--color-teal-rgb), 0.55);
+      box-shadow: 0 0 16px rgba(var(--color-teal-rgb), 0.22);
+      transition: width .3s cubic-bezier(.34, 1.56, .64, 1), height .3s cubic-bezier(.34, 1.56, .64, 1),
+        background .3s, border-color .3s, box-shadow .3s, opacity .2s;
+      transform: translate(-50%, -50%);
+    }
+
+    .dd-cursor-ring.is-active {
+      width: 52px;
+      height: 52px;
+      background: rgba(var(--color-teal-rgb), 0.1);
+      border-color: rgba(var(--color-teal-rgb), 0.85);
+      box-shadow: 0 0 26px rgba(var(--color-teal-rgb), 0.35);
+    }
+
+    .dd-cursor-ring.is-pressed {
+      width: 26px;
+      height: 26px;
     }
 
 
@@ -329,37 +434,41 @@
       z-index: 10;
     }
 
-    /* APP BRAND ON SCREEN */
+    /* BRAND LOGO & TAGLINE ON SCREEN */
     .app-brand {
-      margin-bottom: 32px;
+      margin-bottom: 28px;
       animation: fadeInUp 0.4s ease both;
+      text-align: center;
     }
 
     .logo {
       font-family: 'Outfit', sans-serif;
-      font-size: 30px;
+      font-size: 32px;
       font-weight: 900;
       color: var(--color-teal);
       letter-spacing: -0.03em;
-      margin-bottom: 6px;
+      margin-bottom: 24px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      gap: 12px;
+      padding-right: 44px;
     }
 
     .tagline {
-      font-size: 15px;
+      font-size: 16.5px;
       color: var(--text-muted);
       font-weight: 500;
+      letter-spacing: -0.01em;
     }
 
     /* TYPOGRAPHY */
     h2 {
       font-family: 'Outfit', sans-serif;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
       color: var(--text);
-      margin-bottom: 8px;
+      margin-bottom: 16px;
       letter-spacing: -0.02em;
     }
 
@@ -367,7 +476,7 @@
       font-size: 15.5px;
       color: var(--text-muted);
       line-height: 1.6;
-      margin-bottom: 32px;
+      margin-bottom: 48px;
     }
 
     /* FORM GROUPS */
@@ -387,31 +496,55 @@
       text-transform: uppercase;
     }
 
-    /* SELECT DROPDOWNS */
-    select {
+    /* PREMIUM CUSTOM DROPDOWN */
+    .dd-dropdown {
+      position: relative;
       width: 100%;
-      padding: 14px 18px;
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      font-size: 15px;
-      font-family: inherit;
-      color: var(--text);
-      background: var(--card-bg);
       outline: none;
-      box-shadow: var(--card-shadow);
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230F766E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 18px center;
-      background-size: 16px;
-      padding-right: 48px;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      animation: fadeInUp 0.4s ease 0.15s both;
     }
-
-    select:focus {
-      border-color: var(--color-teal);
-      box-shadow: 0 0 0 3px rgba(var(--color-teal-rgb), 0.12);
+    /* PREMIUM JAVASCRIPT-DRIVEN DROPDOWN (AVOIDS SAFARI CLIPPING BUGS) */
+    .premium-dd-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99998;
+    }
+    .premium-dd-menu {
+      position: absolute;
+      z-index: 99999;
+      background: rgba(var(--dropdown-bg-rgb), 0.75);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05) inset;
+      backdrop-filter: blur(24px) saturate(150%);
+      -webkit-backdrop-filter: blur(24px) saturate(150%);
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 8px;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .premium-dd-menu.open {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .premium-dd-item {
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14.5px;
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+    .dd-dropdown-item:hover {
+      background: rgba(var(--color-teal-rgb), 0.08);
+      color: var(--color-teal);
+    }
+    .dd-dropdown-item.selected {
+      background: rgba(var(--color-teal-rgb), 0.12);
+      color: var(--color-teal);
+      font-weight: 700;
     }
 
     /* BUTTONS */
@@ -510,6 +643,29 @@
     }
 
     /* Checkpoint Card Row */
+    .premium-dd-trigger {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      width: 100%;
+      padding: 14px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--card-bg);
+      box-shadow: var(--card-shadow);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .premium-dd-trigger span.placeholder {
+      color: var(--text-muted);
+    }
+    .premium-dd-trigger.active {
+      transform: translateY(-2px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
     .ti {
       position: relative;
       margin-bottom: 24px;
@@ -752,7 +908,13 @@
         <span class="dd-nav-wordmark">Darren Dias</span>
       </a>
       <div class="dd-nav-right">
-        <a href="index.html" class="dd-nav-link">← All tools</a>
+        <a href="index.html" class="dd-back-btn" aria-label="Back to all tools">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          <span>Back</span>
+        </a>
         <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
           <span class="theme-icons">
             <!-- Moon Icon (Dark Mode) -->
@@ -783,9 +945,13 @@
 
     <!-- On-screen Brand -->
     <div class="app-brand">
-      <div class="logo">🗓️ VisaPath UK</div>
+      <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-teal);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        VisaPath UK
+      </div>
       <div class="tagline">Your personalised UK Student Visa timeline</div>
     </div>
+    <div style="height: 2px; width: 180px; background: var(--color-teal); margin: 0 auto 32px auto; border-radius: 2px; opacity: 0.25;"></div>
 
     <!-- Active dynamic app panel -->
     <div id="app"></div>
@@ -794,6 +960,54 @@
 
   <!-- TIMELINE CALCULATOR ENGINE -->
   <script>
+    // PREMIUM DROPDOWN ENGINE
+    function openPremiumDropdown(e, options, selectedValue, accentVar, onSelectCallback) {
+      document.querySelectorAll('.premium-dd-menu, .premium-dd-overlay').forEach(el => el.remove());
+      const trigger = e.currentTarget;
+      const rect = trigger.getBoundingClientRect();
+      const overlay = document.createElement('div');
+      overlay.className = 'premium-dd-overlay';
+      overlay.onclick = () => {
+        document.querySelectorAll('.premium-dd-menu, .premium-dd-overlay').forEach(el => el.remove());
+        trigger.classList.remove('active');
+      };
+      document.body.appendChild(overlay);
+      
+      const menu = document.createElement('div');
+      menu.className = 'premium-dd-menu';
+      menu.style.setProperty('--accent-rgb', accentVar);
+      
+      options.forEach(opt => {
+        const item = document.createElement('div');
+        item.className = 'premium-dd-item' + (opt.value === selectedValue ? ' selected' : '');
+        item.innerHTML = opt.label;
+        item.onclick = () => {
+          onSelectCallback(opt.value);
+          overlay.remove();
+          menu.remove();
+          trigger.classList.remove('active');
+        };
+        menu.appendChild(item);
+      });
+      document.body.appendChild(menu);
+      
+      const menuHeight = menu.offsetHeight;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      
+      if (spaceBelow < menuHeight + 16 && spaceAbove > spaceBelow) {
+        menu.style.top = (rect.top + window.scrollY - menuHeight - 8) + 'px';
+        menu.style.transform = 'translateY(10px)';
+      } else {
+        menu.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+      }
+      
+      menu.style.left = (rect.left + window.scrollX) + 'px';
+      menu.style.width = rect.width + 'px';
+      trigger.classList.add('active');
+      requestAnimationFrame(() => menu.classList.add('open'));
+    }
+
     // Force scroll to top on page load and manual restoration
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
@@ -821,6 +1035,25 @@
     const INTAKE_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const LEVELS = ["Undergraduate (UG)", "Postgraduate Taught (PGT)", "Postgraduate Research (PGR)", "Foundation Year", "Pre-sessional English"];
     const COUNTRIES = Object.keys(COUNTRY_NOTES).concat(["Other"]);
+
+    const COUNTRY_FLAGS = {
+      "India": "🇮🇳",
+      "Nigeria": "🇳🇬",
+      "Pakistan": "🇵🇰",
+      "Bangladesh": "🇧🇩",
+      "Sri Lanka": "🇱🇰",
+      "Nepal": "🇳🇵",
+      "Ghana": "🇬🇭",
+      "Kenya": "🇰🇪",
+      "China": "🇨🇳",
+      "Malaysia": "🇲🇾",
+      "Philippines": "🇵🇭",
+      "USA": "🇺🇸",
+      "Canada": "🇨🇦",
+      "Australia": "🇦🇺",
+      "EU / EEA Country": "🇪🇺",
+      "Other": "🌍"
+    };
 
     const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -873,7 +1106,9 @@
           <div style="text-align:center; padding: 48px 20px; animation: fadeInUp 0.5s ease both;">
             <div class="ai-loader-container">
               <div class="ai-pulse-orb">
-                <div class="ai-inner-core">🗓️</div>
+                <div class="ai-inner-core">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-teal);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                </div>
               </div>
               <div class="ai-scan-line"></div>
             </div>
@@ -887,32 +1122,34 @@
 
       if (!el._showResults) {
         el.innerHTML = `
+          <div style="animation: fadeInUp 0.4s ease both; text-align: center; margin-bottom: 24px;">
+            <h2>Your journey starts here</h2>
+            <p class="sub" style="margin-left: auto; margin-right: auto; max-width: 440px;">Fill in the details below to generate a personalised timeline for your UK Student Visa application.</p>
+          </div>
+          
           <div style="animation: fadeInUp 0.4s ease both;">
-            <h2>Generate your visa timeline</h2>
-            <p class="sub">Tell us where you're from and when you're starting. We'll build a monthly checklist for your entire journey, so you never miss a deadline.</p>
-            
             <div class="field">
               <label class="lbl">Your country of nationality</label>
-              <select onchange="country=this.value;update()">
-                <option value="">Select your country...</option>
-                ${COUNTRIES.map(c => `<option${country === c ? ' selected' : ''}>${c}</option>`).join('')}
-              </select>
+              <div class="premium-dd-trigger" onclick="openPremiumDropdown(event, COUNTRIES.map(c => ({label: (COUNTRY_FLAGS[c] ? '<span style=\\'margin-right: 8px;\\'>' + COUNTRY_FLAGS[c] + '</span>' : '') + c, value: c})), country, 'var(--color-teal-rgb)', (val) => { country = val; update(); })">
+                <span class="${!country ? 'placeholder' : ''}">${country ? (COUNTRY_FLAGS[country] ? '<span style="margin-right: 8px;">' + COUNTRY_FLAGS[country] + '</span>' : '') + country : 'Select your country...'}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
             </div>
             
             <div class="field">
               <label class="lbl">Course intake</label>
-              <select onchange="var v=this.value.split('|');intake=v[0];intakeYear=parseInt(v[1]);update()">
-                <option value="">Select intake month...</option>
-                ${[2025, 2026].flatMap(y => INTAKE_MONTHS.map(m => `<option value="${m}|${y}"${intake === m && intakeYear === y ? ' selected' : ''}>${m} ${y}</option>`))}
-              </select>
+              <div class="premium-dd-trigger" onclick="openPremiumDropdown(event, [2025, 2026].flatMap(y => INTAKE_MONTHS.map(m => ({label: m + ' ' + y, value: m + '|' + y}))), intake ? (intake + '|' + intakeYear) : '', 'var(--color-teal-rgb)', (val) => { const parts = val.split('|'); intake = parts[0]; intakeYear = parseInt(parts[1]); update(); })">
+                <span class="${!intake ? 'placeholder' : ''}">${intake ? (intake + ' ' + intakeYear) : 'Select intake month...'}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
             </div>
             
             <div class="field">
               <label class="lbl">Level of study</label>
-              <select onchange="level=this.value;update()">
-                <option value="">Select level...</option>
-                ${LEVELS.map(l => `<option${level === l ? ' selected' : ''}>${l}</option>`).join('')}
-              </select>
+              <div class="premium-dd-trigger" onclick="openPremiumDropdown(event, LEVELS.map(l => ({label: l, value: l})), level, 'var(--color-teal-rgb)', (val) => { level = val; update(); })">
+                <span class="${!level ? 'placeholder' : ''}">${level || 'Select level...'}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
             </div>
             
             <button class="btn" onclick="showTimeline()" ${canGo ? '' : 'disabled'}>Generate my timeline →</button>
@@ -1029,6 +1266,70 @@
         iconMoon.classList.remove('active');
       }
     }
+
+    /* ── premium custom cursor ──────────────────────────────────────
+       Dot tracks the pointer exactly; the ring trails behind with a
+       little easing for a smooth, fluid feel. Scales up over anything
+       clickable, scales down on press, and never touches touch devices
+       at all — gated behind the same media feature the CSS uses.      */
+    (function initPremiumCursor() {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+      document.documentElement.classList.add('dd-cursor-on');
+
+      var dot = document.createElement('div');
+      dot.className = 'dd-cursor-dot';
+      var ring = document.createElement('div');
+      ring.className = 'dd-cursor-ring';
+      document.body.appendChild(dot);
+      document.body.appendChild(ring);
+
+      var mx = 0, my = 0, rx = 0, ry = 0, hasMoved = false;
+
+      function placeDot() {
+        dot.style.transform = 'translate(' + mx + 'px, ' + my + 'px) translate(-50%, -50%)';
+      }
+
+      window.addEventListener('mousemove', function (e) {
+        mx = e.clientX;
+        my = e.clientY;
+        if (!hasMoved) {
+          hasMoved = true;
+          rx = mx;
+          ry = my;
+          dot.classList.add('is-visible');
+          ring.classList.add('is-visible');
+        }
+        placeDot();
+      });
+
+      (function tick() {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        ring.style.transform = 'translate(' + rx + 'px, ' + ry + 'px) translate(-50%, -50%)';
+        requestAnimationFrame(tick);
+      })();
+
+      var interactiveSel = 'a, button, input, select, textarea, label, summary, [role="button"], [onclick]';
+
+      document.addEventListener('mouseover', function (e) {
+        if (e.target.closest(interactiveSel)) ring.classList.add('is-active');
+      });
+      document.addEventListener('mouseout', function (e) {
+        if (e.target.closest(interactiveSel)) ring.classList.remove('is-active');
+      });
+      document.addEventListener('mousedown', function () { ring.classList.add('is-pressed'); });
+      document.addEventListener('mouseup', function () { ring.classList.remove('is-pressed'); });
+
+      document.addEventListener('mouseleave', function () {
+        dot.classList.add('is-leaving');
+        ring.classList.add('is-leaving');
+      });
+      document.addEventListener('mouseenter', function () {
+        dot.classList.remove('is-leaving');
+        ring.classList.remove('is-leaving');
+      });
+    })();
   </script>
 </body>
 

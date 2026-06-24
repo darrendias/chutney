@@ -38,6 +38,7 @@
       --card-shadow: 0 10px 30px -10px rgba(138, 120, 102, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
       --card-shadow-hover: 0 20px 45px -12px rgba(138, 120, 102, 0.16), 0 4px 12px rgba(138, 120, 102, 0.04);
       --header-bg: rgba(251, 249, 246, 0.8);
+      --dropdown-bg: rgba(251, 249, 246, 0.75);
       --footer-hr: rgba(220, 210, 198, 0.5);
 
       /* Accent Colors - Light Theme */
@@ -69,6 +70,7 @@
       --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
       --card-shadow-hover: 0 25px 50px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
       --header-bg: rgba(13, 11, 10, 0.8);
+      --dropdown-bg: rgba(13, 11, 10, 0.75);
       --footer-hr: rgba(255, 255, 255, 0.06);
 
       /* Accent Colors - Dark Theme */
@@ -96,6 +98,13 @@
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
+    }
+
+    /* Prevent text selection and drag on interactive UI elements to fix cursor flash */
+    a, button, .card, .btn, .row-btn, .chip, .cc, .theme-toggle-btn, .dd-back-btn, .opt, .ti {
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: none;
     }
 
     /* BACKGROUND DESIGN ELEMENTS */
@@ -230,25 +239,50 @@
       gap: 18px;
     }
 
-    .dd-nav-link {
+    /* premium back button — tinted with this tool's own accent colour on
+       hover, so it ties into the same colour identity as the DD logo mark */
+    .dd-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 14px 0 11px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-muted);
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-muted);
       text-decoration: none;
       white-space: nowrap;
-      transition: color .2s;
+      box-shadow: var(--card-shadow);
+      transition: border-color .25s, background .25s, color .25s, box-shadow .25s, transform .15s;
     }
 
-    .dd-nav-link:hover {
-      color: #FF5520;
+    .dd-back-btn svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    .dd-back-btn:hover {
+      border-color: var(--color-purple);
+      color: var(--color-purple);
+      background: rgba(var(--color-purple-rgb), 0.1);
+      box-shadow: 0 4px 16px rgba(var(--color-purple-rgb), 0.22);
+    }
+
+    .dd-back-btn:hover svg {
+      transform: translateX(-2px);
+    }
+
+    .dd-back-btn:active {
+      transform: scale(0.94);
     }
 
     @media (max-width: 360px) {
-      .dd-nav-link {
-        font-size: 12px;
-      }
-
       .dd-nav-wordmark {
         font-size: 13px;
       }
@@ -256,6 +290,76 @@
       .dd-nav-right {
         gap: 12px;
       }
+
+      .dd-back-btn span {
+        display: none;
+      }
+
+      .dd-back-btn {
+        padding: 0 9px;
+      }
+    }
+
+    /* ── premium custom cursor — real mouse/trackpad only ─────────────
+       Touch devices are completely untouched: cursor:none only applies
+       inside this same media feature, so nothing changes on mobile.    */
+    @media (hover: hover) and (pointer: fine) {
+
+      html.dd-cursor-on,
+      html.dd-cursor-on * {
+        cursor: none !important;
+      }
+    }
+
+    .dd-cursor-dot,
+    .dd-cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999999;
+      border-radius: 50%;
+      opacity: 0;
+      will-change: transform;
+    }
+
+    .dd-cursor-dot.is-visible,
+    .dd-cursor-ring.is-visible {
+      opacity: 1;
+    }
+
+    .dd-cursor-dot.is-leaving,
+    .dd-cursor-ring.is-leaving {
+      opacity: 0;
+    }
+
+    .dd-cursor-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--color-purple);
+      transition: opacity .2s;
+    }
+
+    .dd-cursor-ring {
+      width: 34px;
+      height: 34px;
+      border: 1.5px solid rgba(var(--color-purple-rgb), 0.55);
+      box-shadow: 0 0 16px rgba(var(--color-purple-rgb), 0.22);
+      transition: width .3s cubic-bezier(.34, 1.56, .64, 1), height .3s cubic-bezier(.34, 1.56, .64, 1),
+        background .3s, border-color .3s, box-shadow .3s, opacity .2s;
+    }
+
+    .dd-cursor-ring.is-active {
+      width: 52px;
+      height: 52px;
+      background: rgba(var(--color-purple-rgb), 0.1);
+      border-color: rgba(var(--color-purple-rgb), 0.85);
+      box-shadow: 0 0 26px rgba(var(--color-purple-rgb), 0.35);
+    }
+
+    .dd-cursor-ring.is-pressed {
+      width: 26px;
+      height: 26px;
     }
 
 
@@ -330,35 +434,39 @@
 
     /* BRAND LOGO & TAGLINE ON SCREEN */
     .app-brand {
-      margin-bottom: 32px;
+      margin-bottom: 28px;
       animation: fadeInUp 0.4s ease both;
+      text-align: center;
     }
 
     .logo {
       font-family: 'Outfit', sans-serif;
-      font-size: 30px;
+      font-size: 32px;
       font-weight: 900;
       color: var(--color-purple);
       letter-spacing: -0.03em;
-      margin-bottom: 6px;
+      margin-bottom: 24px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      gap: 12px;
+      padding-right: 44px;
     }
 
     .tagline {
-      font-size: 15px;
+      font-size: 16.5px;
       color: var(--text-muted);
       font-weight: 500;
+      letter-spacing: -0.01em;
     }
 
     /* TYPOGRAPHY */
     h2 {
       font-family: 'Outfit', sans-serif;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
       color: var(--text);
-      margin-bottom: 8px;
+      margin-bottom: 16px;
       letter-spacing: -0.02em;
     }
 
@@ -366,7 +474,7 @@
       font-size: 15.5px;
       color: var(--text-muted);
       line-height: 1.6;
-      margin-bottom: 32px;
+      margin-bottom: 48px;
     }
 
     .lbl {
@@ -435,13 +543,34 @@
     }
 
     .ci {
-      font-size: 26px;
-      margin-bottom: 6px;
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      width: 46px;
+      height: 46px;
+      margin: 0 auto 12px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 2px 8px rgba(0,0,0,0.05);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .cc:hover .ci {
-      transform: scale(1.15) rotate(4deg);
+      transform: scale(1.1) rotate(4deg);
+      color: var(--color-purple);
+      border-color: rgba(var(--color-purple-rgb), 0.3);
+      background: rgba(var(--color-purple-rgb), 0.08);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 6px 14px rgba(var(--color-purple-rgb), 0.15);
+    }
+
+    .cc.on .ci {
+      background: var(--color-purple);
+      color: #fff;
+      border-color: var(--color-purple);
+      box-shadow: 0 6px 16px rgba(var(--color-purple-rgb), 0.4);
+      transform: scale(1.1) translateY(-2px);
     }
 
     .cn {
@@ -450,33 +579,87 @@
       color: var(--text);
     }
 
-    /* SELECT DROPDOWNS */
-    select {
+    /* PREMIUM CUSTOM DROPDOWN */
+    .dd-dropdown {
+      position: relative;
+      width: 100%;
+      outline: none;
+      animation: fadeInUp 0.4s ease 0.15s both;
+      margin-bottom: 28px;
+    }
+    /* PREMIUM JAVASCRIPT-DRIVEN DROPDOWN (AVOIDS SAFARI CLIPPING BUGS) */
+    .premium-dd-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99998;
+    }
+    .premium-dd-menu {
+      position: absolute;
+      z-index: 99999;
+      background: var(--dropdown-bg);
+      opacity: 0.75;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05) inset;
+      backdrop-filter: blur(24px) saturate(150%);
+      -webkit-backdrop-filter: blur(24px) saturate(150%);
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 8px;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .premium-dd-menu.open {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .premium-dd-item {
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14.5px;
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+    .premium-dd-trigger {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
       width: 100%;
       padding: 14px 18px;
       border: 1.5px solid var(--border);
       border-radius: 16px;
       font-size: 15px;
-      font-family: inherit;
       color: var(--text);
       background: var(--card-bg);
-      outline: none;
-      margin-bottom: 28px;
       box-shadow: var(--card-shadow);
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238A7866' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 18px center;
-      background-size: 16px;
-      padding-right: 48px;
       transition: border-color 0.3s, box-shadow 0.3s;
-      animation: fadeInUp 0.4s ease 0.15s both;
     }
-
-    select:focus {
-      border-color: var(--color-purple);
+    .premium-dd-trigger span.placeholder {
+      color: var(--text-muted);
+    }
+    .premium-dd-trigger.active {
+      border-color: rgb(var(--color-purple-rgb));
       box-shadow: 0 0 0 3px rgba(var(--color-purple-rgb), 0.12);
+    }
+    .premium-dd-trigger svg {
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      stroke: var(--text-muted);
+    }
+    .premium-dd-trigger.active svg {
+      transform: rotate(180deg);
+      stroke: var(--color-purple);
+    }
+    .dd-dropdown-item:hover {
+      background: rgba(var(--color-purple-rgb), 0.08);
+      color: var(--color-purple);
+    }
+    .dd-dropdown-item.selected {
+      background: rgba(var(--color-purple-rgb), 0.12);
+      color: var(--color-purple);
+      font-weight: 700;
     }
 
     /* LAUNCH BUTTONS */
@@ -672,7 +855,6 @@
       color: var(--color-green);
     }
 
-    /* VERDICT BOXES & PANELING */
     .verdict-box {
       background: var(--card-bg);
       border: 1.5px solid var(--border);
@@ -880,7 +1062,13 @@
         <span class="dd-nav-wordmark">Darren Dias</span>
       </a>
       <div class="dd-nav-right">
-        <a href="index.html" class="dd-nav-link">← All tools</a>
+        <a href="index.html" class="dd-back-btn" aria-label="Back to all tools">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          <span>Back</span>
+        </a>
         <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
           <span class="theme-icons">
             <!-- Moon Icon (Dark Mode) -->
@@ -911,9 +1099,13 @@
 
     <!-- Cost Comparator Screen Brand -->
     <div class="app-brand">
-      <div class="logo">💸 CostCheck UK</div>
+      <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-purple);"><path d="M18 7c0-5.333-8-5.333-8 0"/><path d="M10 7v14"/><path d="M6 21h12"/><path d="M6 13h10"/></svg>
+        CostCheck UK
+      </div>
       <div class="tagline">Real cost breakdowns for studying in any UK city</div>
     </div>
+    <div style="height: 2px; width: 180px; background: var(--color-purple); margin: 0 auto 32px auto; border-radius: 2px; opacity: 0.25;"></div>
 
     <!-- Active dynamic app panel -->
     <div id="app"></div>
@@ -929,18 +1121,18 @@
     window.scrollTo(0, 0);
 
     const CITIES = [
-      { name: "London", emoji: "🏙️" },
-      { name: "Manchester", emoji: "🐝" },
-      { name: "Birmingham", emoji: "🎭" },
-      { name: "Edinburgh", emoji: "🏰" },
-      { name: "Leeds", emoji: "⚽" },
-      { name: "Bristol", emoji: "🌉" },
-      { name: "Sheffield", emoji: "🎓" },
-      { name: "Nottingham", emoji: "🌳" },
-      { name: "Glasgow", emoji: "🎶" },
-      { name: "Liverpool", emoji: "🎸" },
-      { name: "Newcastle", emoji: "⚓" },
-      { name: "Southampton", emoji: "⛵" },
+      { name: "London", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h16M6.3 6.3l11.4 11.4M6.3 17.7L17.7 6.3"/></svg>` },
+      { name: "Manchester", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22h20M4 22V10l6-4v16M14 22V12l6-4v14M9 22V14h2"/></svg>` },
+      { name: "Birmingham", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20M12 12l8-8M12 12l-8 8"/></svg>` },
+      { name: "Edinburgh", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22h20M4 22V8h4v14M10 22V12h4v10M16 22V8h4v14M8 8V4l-4 4M20 8V4l-4 4"/></svg>` },
+      { name: "Leeds", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>` },
+      { name: "Bristol", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-4 10-4 10 4 10 4M2 18s4-4 10-4 10 4 10 4M12 8v10M6 10v8M18 10v8"/></svg>` },
+      { name: "Sheffield", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>` },
+      { name: "Nottingham", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-8M8 14A4 4 0 1 1 12 6a4 4 0 1 1 4 8zM12 2L8 6h8z"/></svg>` },
+      { name: "Glasgow", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>` },
+      { name: "Liverpool", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>` },
+      { name: "Newcastle", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><line x1="5" y1="12" x2="19" y2="12"/><path d="M5 12s0 10 7 10 7-10 7-10"/></svg>` },
+      { name: "Southampton", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 18H2M12 2v16M4 18l8-16 8 16"/></svg>` },
     ];
 
     // [rent, food, transport, social, other] per lifestyle level: budget, moderate, comfortable, premium
@@ -984,7 +1176,55 @@
 
     // Columns styling colors using dynamic system variables
     const COLORS = ["var(--color-purple)", "var(--color-blue)", "var(--color-red)", "var(--color-teal)"];
-    let selected = [], lifestyle = 1, loading = false;
+    let selected = [], lifestyle = null, loading = false, step = 0;
+
+    // PREMIUM DROPDOWN ENGINE
+    function openPremiumDropdown(e, options, selectedValue, accentVar, onSelectCallback) {
+      document.querySelectorAll('.premium-dd-menu, .premium-dd-overlay').forEach(el => el.remove());
+      const trigger = e.currentTarget;
+      const rect = trigger.getBoundingClientRect();
+      const overlay = document.createElement('div');
+      overlay.className = 'premium-dd-overlay';
+      overlay.onclick = () => {
+        document.querySelectorAll('.premium-dd-menu, .premium-dd-overlay').forEach(el => el.remove());
+        trigger.classList.remove('active');
+      };
+      document.body.appendChild(overlay);
+      
+      const menu = document.createElement('div');
+      menu.className = 'premium-dd-menu';
+      menu.style.setProperty('--accent-rgb', accentVar);
+      
+      options.forEach(opt => {
+        const item = document.createElement('div');
+        item.className = 'premium-dd-item' + (opt.value === selectedValue ? ' selected' : '');
+        item.innerHTML = opt.label;
+        item.onclick = () => {
+          onSelectCallback(opt.value);
+          overlay.remove();
+          menu.remove();
+          trigger.classList.remove('active');
+        };
+        menu.appendChild(item);
+      });
+      document.body.appendChild(menu);
+      
+      const menuHeight = menu.offsetHeight;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      
+      if (spaceBelow < menuHeight + 16 && spaceAbove > spaceBelow) {
+        menu.style.top = (rect.top + window.scrollY - menuHeight - 8) + 'px';
+        menu.style.transform = 'translateY(10px)';
+      } else {
+        menu.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+      }
+      
+      menu.style.left = (rect.left + window.scrollX) + 'px';
+      menu.style.width = rect.width + 'px';
+      trigger.classList.add('active');
+      requestAnimationFrame(() => menu.classList.add('open'));
+    }
 
     function toggleCity(name) {
       if (selected.includes(name)) selected = selected.filter(c => c !== name);
@@ -994,14 +1234,16 @@
 
     function renderForm() {
       const el = document.getElementById('app');
-      const can = selected.length >= 2;
+      const can = selected.length >= 2 && lifestyle !== null;
 
       if (loading) {
         el.innerHTML = `
           <div style="text-align:center; padding: 48px 20px; animation: fadeInUp 0.5s ease both;">
             <div class="ai-loader-container">
               <div class="ai-pulse-orb">
-                <div class="ai-inner-core">💸</div>
+                <div class="ai-inner-core">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-purple);"><path d="M18 7c0-5.333-8-5.333-8 0"/><path d="M10 7v14"/><path d="M6 21h12"/><path d="M6 13h10"/></svg>
+                </div>
               </div>
               <div class="ai-scan-line"></div>
             </div>
@@ -1013,12 +1255,30 @@
         return;
       }
 
+      if (step === 0) {
+        el.innerHTML = `
+          <div style="animation: fadeInUp 0.4s ease both; text-align: center; margin-bottom: 24px;">
+            <h2>Compare UK cities</h2>
+            <p class="sub" style="margin-left: auto; margin-right: auto; max-width: 440px;">Pick 2 or 3 cities to compare. We'll break down rent, food, transport and social costs so that you can make a smart, informed decision.</p>
+            <button class="btn" style="margin: 0 auto; max-width: 240px; padding: 18px; justify-content: center;" onclick="step = 1; renderForm()">Start comparing →</button>
+          </div>`;
+        return;
+      }
+
       el.innerHTML = `
-        <div style="animation: fadeInUp 0.4s ease both;">
-          <h2>Compare UK cities</h2>
-          <p class="sub">Pick 2 or 3 cities to compare. We'll break down rent, food, transport and social costs so that you can make a smart, informed decision.</p>
+        <div style="animation: fadeInUp 0.4s ease both; text-align: center; margin-bottom: 24px;">
+          <h2>Your preferences</h2>
+          <p class="sub" style="margin-left: auto; margin-right: auto;">Tell us your lifestyle and pick 2 or 3 cities to generate your personalized cost breakdown.</p>
+        </div>
           
-          <div class="lbl">
+        <div style="animation: fadeInUp 0.4s ease both;">
+          <div class="lbl">Your lifestyle</div>
+          <div class="premium-dd-trigger" onclick="openPremiumDropdown(event, LIFESTYLE_LABELS.map((l, i) => ({label: l, value: i})), lifestyle, 'var(--color-purple-rgb)', (val) => { lifestyle = val; renderForm(); })">
+            <span class="${lifestyle === null ? 'placeholder' : ''}">${lifestyle !== null ? LIFESTYLE_LABELS[lifestyle] : 'What is your lifestyle like?'}</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+          
+          <div class="lbl" style="margin-top: 24px;">
             Select 2 or 3 cities 
             <span style="color:${selected.length >= 2 ? 'var(--color-green)' : 'var(--text-muted)'}; font-weight:${selected.length >= 2 ? 800 : 500}">
               — ${selected.length}/3 selected ${selected.length >= 2 ? '✓' : ''}
@@ -1027,18 +1287,13 @@
           
           <div class="city-grid">
             ${CITIES.map(c => `<div class="cc${selected.includes(c.name) ? ' on' : ''}" onclick="toggleCity('${c.name}')">
-              <div class="ci">${c.emoji}</div>
+              <div class="ci">${c.icon}</div>
               <div class="cn">${c.name}</div>
             </div>`).join('')}
           </div>
           
-          <div class="lbl">Your lifestyle</div>
-          <select onchange="lifestyle=parseInt(this.value);renderForm()">
-            ${LIFESTYLE_LABELS.map((l, i) => `<option value="${i}"${lifestyle === i ? ' selected' : ''}>${l}</option>`).join('')}
-          </select>
-          
-          <button class="btn" onclick="showResults()" ${can ? '' : 'disabled'}>Compare costs →</button>
-          ${!can ? `<p style="font-size:13.5px;color:var(--text-muted);margin-top:14px;text-align:center;font-weight:600">Select at least 2 cities to compare</p>` : ''}
+          <button class="btn" style="margin-top:24px" onclick="showResults()" ${can ? '' : 'disabled'}>Compare costs →</button>
+          ${!can ? `<p style="font-size:13.5px;color:var(--text-muted);margin-top:14px;text-align:center;font-weight:600">${selected.length < 2 ? 'Select at least 2 cities to compare' : 'Select your lifestyle'}</p>` : ''}
         </div>`;
     }
 
@@ -1218,6 +1473,70 @@
         iconMoon.classList.remove('active');
       }
     }
+
+    /* ── premium custom cursor ──────────────────────────────────────
+       Dot tracks the pointer exactly; the ring trails behind with a
+       little easing for a smooth, fluid feel. Scales up over anything
+       clickable, scales down on press, and never touches touch devices
+       at all — gated behind the same media feature the CSS uses.      */
+    (function initPremiumCursor() {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+      document.documentElement.classList.add('dd-cursor-on');
+
+      var dot = document.createElement('div');
+      dot.className = 'dd-cursor-dot';
+      var ring = document.createElement('div');
+      ring.className = 'dd-cursor-ring';
+      document.body.appendChild(dot);
+      document.body.appendChild(ring);
+
+      var mx = 0, my = 0, rx = 0, ry = 0, hasMoved = false;
+
+      function placeDot() {
+        dot.style.transform = 'translate(' + mx + 'px, ' + my + 'px) translate(-50%, -50%)';
+      }
+
+      window.addEventListener('mousemove', function (e) {
+        mx = e.clientX;
+        my = e.clientY;
+        if (!hasMoved) {
+          hasMoved = true;
+          rx = mx;
+          ry = my;
+          dot.classList.add('is-visible');
+          ring.classList.add('is-visible');
+        }
+        placeDot();
+      });
+
+      (function tick() {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        ring.style.transform = 'translate(' + rx + 'px, ' + ry + 'px) translate(-50%, -50%)';
+        requestAnimationFrame(tick);
+      })();
+
+      var interactiveSel = 'a, button, input, select, textarea, label, summary, [role="button"], [onclick]';
+
+      document.addEventListener('mouseover', function (e) {
+        if (e.target.closest(interactiveSel)) ring.classList.add('is-active');
+      });
+      document.addEventListener('mouseout', function (e) {
+        if (e.target.closest(interactiveSel)) ring.classList.remove('is-active');
+      });
+      document.addEventListener('mousedown', function () { ring.classList.add('is-pressed'); });
+      document.addEventListener('mouseup', function () { ring.classList.remove('is-pressed'); });
+
+      document.addEventListener('mouseleave', function () {
+        dot.classList.add('is-leaving');
+        ring.classList.add('is-leaving');
+      });
+      document.addEventListener('mouseenter', function () {
+        dot.classList.remove('is-leaving');
+        ring.classList.remove('is-leaving');
+      });
+    })();
   </script>
 </body>
 

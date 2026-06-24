@@ -38,6 +38,7 @@
       --card-shadow: 0 10px 30px -10px rgba(138, 120, 102, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
       --card-shadow-hover: 0 20px 45px -12px rgba(138, 120, 102, 0.16), 0 4px 12px rgba(138, 120, 102, 0.04);
       --header-bg: rgba(251, 249, 246, 0.8);
+      --dropdown-bg: rgba(251, 249, 246, 0.75);
       --footer-hr: rgba(220, 210, 198, 0.5);
 
       /* Accent Colors - Light Theme */
@@ -69,6 +70,7 @@
       --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
       --card-shadow-hover: 0 25px 50px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
       --header-bg: rgba(13, 11, 10, 0.8);
+      --dropdown-bg: rgba(13, 11, 10, 0.75);
       --footer-hr: rgba(255, 255, 255, 0.06);
 
       /* Accent Colors - Dark Theme */
@@ -96,6 +98,13 @@
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
+    }
+
+    /* Prevent text selection and drag on interactive UI elements to fix cursor flash */
+    a, button, .card, .btn, .row-btn, .chip, .cc, .theme-toggle-btn, .dd-back-btn, .opt, .ti {
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: none;
     }
 
     /* BACKGROUND DESIGN ELEMENTS */
@@ -230,25 +239,50 @@
       gap: 18px;
     }
 
-    .dd-nav-link {
+    /* premium back button — tinted with this tool's own accent colour on
+       hover, so it ties into the same colour identity as the DD logo mark */
+    .dd-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 14px 0 11px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-muted);
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-muted);
       text-decoration: none;
       white-space: nowrap;
-      transition: color .2s;
+      box-shadow: var(--card-shadow);
+      transition: border-color .25s, background .25s, color .25s, box-shadow .25s, transform .15s;
     }
 
-    .dd-nav-link:hover {
-      color: #FF5520;
+    .dd-back-btn svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    .dd-back-btn:hover {
+      border-color: var(--color-red);
+      color: var(--color-red);
+      background: rgba(var(--color-red-rgb), 0.1);
+      box-shadow: 0 4px 16px rgba(var(--color-red-rgb), 0.22);
+    }
+
+    .dd-back-btn:hover svg {
+      transform: translateX(-2px);
+    }
+
+    .dd-back-btn:active {
+      transform: scale(0.94);
     }
 
     @media (max-width: 360px) {
-      .dd-nav-link {
-        font-size: 12px;
-      }
-
       .dd-nav-wordmark {
         font-size: 13px;
       }
@@ -256,6 +290,76 @@
       .dd-nav-right {
         gap: 12px;
       }
+
+      .dd-back-btn span {
+        display: none;
+      }
+
+      .dd-back-btn {
+        padding: 0 9px;
+      }
+    }
+
+    /* ── premium custom cursor — real mouse/trackpad only ─────────────
+       Touch devices are completely untouched: cursor:none only applies
+       inside this same media feature, so nothing changes on mobile.    */
+    @media (hover: hover) and (pointer: fine) {
+
+      html.dd-cursor-on,
+      html.dd-cursor-on * {
+        cursor: none !important;
+      }
+    }
+
+    .dd-cursor-dot,
+    .dd-cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999999;
+      border-radius: 50%;
+      opacity: 0;
+      will-change: transform;
+    }
+
+    .dd-cursor-dot.is-visible,
+    .dd-cursor-ring.is-visible {
+      opacity: 1;
+    }
+
+    .dd-cursor-dot.is-leaving,
+    .dd-cursor-ring.is-leaving {
+      opacity: 0;
+    }
+
+    .dd-cursor-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--color-red);
+      transition: opacity .2s;
+    }
+
+    .dd-cursor-ring {
+      width: 34px;
+      height: 34px;
+      border: 1.5px solid rgba(var(--color-red-rgb), 0.55);
+      box-shadow: 0 0 16px rgba(var(--color-red-rgb), 0.22);
+      transition: width .3s cubic-bezier(.34, 1.56, .64, 1), height .3s cubic-bezier(.34, 1.56, .64, 1),
+        background .3s, border-color .3s, box-shadow .3s, opacity .2s;
+    }
+
+    .dd-cursor-ring.is-active {
+      width: 52px;
+      height: 52px;
+      background: rgba(var(--color-red-rgb), 0.1);
+      border-color: rgba(var(--color-red-rgb), 0.85);
+      box-shadow: 0 0 26px rgba(var(--color-red-rgb), 0.35);
+    }
+
+    .dd-cursor-ring.is-pressed {
+      width: 26px;
+      height: 26px;
     }
 
 
@@ -389,14 +493,100 @@
       box-shadow: 0 0 0 3px rgba(var(--color-red-rgb), 0.12);
     }
 
-    select.inp {
+    /* PREMIUM CUSTOM DROPDOWN */
+    .dd-dropdown {
+      position: relative;
+      width: 100%;
+      outline: none;
+      animation: fadeInUp 0.4s ease 0.1s both;
+    }
+    /* PREMIUM JAVASCRIPT-DRIVEN DROPDOWN (AVOIDS SAFARI CLIPPING BUGS) */
+    .premium-dd-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99998;
+    }
+    .premium-dd-menu {
+      position: absolute;
+      z-index: 99999;
+      background: var(--dropdown-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05) inset;
+      backdrop-filter: blur(24px) saturate(150%);
+      -webkit-backdrop-filter: blur(24px) saturate(150%);
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 8px;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .premium-dd-menu.open {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .premium-dd-item {
+      padding: 12px 16px;
+      border-radius: 10px;
       cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238A7866' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 18px center;
-      background-size: 16px;
-      padding-right: 48px;
+      font-size: 14.5px;
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+    .premium-dd-item:hover {
+      background: rgba(var(--accent-rgb, 232, 66, 10), 0.08);
+      color: rgb(var(--accent-rgb, 232, 66, 10));
+    }
+    .premium-dd-item.selected {
+      background: rgba(var(--accent-rgb, 232, 66, 10), 0.12);
+      color: rgb(var(--accent-rgb, 232, 66, 10));
+      font-weight: 700;
+    }
+    .premium-dd-trigger {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      width: 100%;
+      padding: 14px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--card-bg);
+      box-shadow: var(--card-shadow);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .premium-dd-trigger span.placeholder {
+      color: var(--text-muted);
+    }
+    .premium-dd-trigger.active {
+      border-color: rgb(var(--accent-rgb, 232, 66, 10));
+      box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 232, 66, 10), 0.12);
+    }
+    .premium-dd-trigger svg {
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      stroke: var(--text-muted);
+    }
+    .premium-dd-trigger.active svg {
+      transform: rotate(180deg);
+      stroke: rgb(var(--accent-rgb, 232, 66, 10));
+    }
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14.5px;
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+    .dd-dropdown-item:hover {
+      background: rgba(var(--color-red-rgb), 0.08);
+      color: var(--color-red);
+    }
+    .dd-dropdown-item.selected {
+      background: rgba(var(--color-red-rgb), 0.12);
+      color: var(--color-red);
+      font-weight: 700;
     }
 
     /* TACTILE ROW SELECTION BUTTONS */
@@ -552,6 +742,13 @@
       background: rgba(var(--color-green-rgb), 0.05);
       color: var(--color-green);
       box-shadow: 0 6px 16px -6px rgba(var(--color-green-rgb), 0.16);
+    }
+
+    .chip.on.blu {
+      border-color: var(--color-blue);
+      background: rgba(var(--color-blue-rgb), 0.05);
+      color: var(--color-blue);
+      box-shadow: 0 6px 16px -6px rgba(var(--color-blue-rgb), 0.16);
     }
 
     .chip.on.pur {
@@ -1013,7 +1210,13 @@
         <span class="dd-nav-wordmark">Darren Dias</span>
       </a>
       <div class="dd-nav-right">
-        <a href="index.html" class="dd-nav-link">← All tools</a>
+        <a href="index.html" class="dd-back-btn" aria-label="Back to all tools">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          <span>Back</span>
+        </a>
         <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
           <span class="theme-icons">
             <!-- Moon Icon (Dark Mode) -->
@@ -1046,6 +1249,58 @@
 
   <!-- QUESTIONNAIRE ENGINE & LOGIC -->
   <script>
+    // PREMIUM DROPDOWN ENGINE (BODY-LEVEL ANCHORING)
+    function openPremiumDropdown(e, options, selectedValue, accentVar, onSelectCallback) {
+      document.querySelectorAll('.premium-dd-menu, .premium-dd-overlay').forEach(el => el.remove());
+      
+      const trigger = e.currentTarget;
+      const rect = trigger.getBoundingClientRect();
+      
+      const overlay = document.createElement('div');
+      overlay.className = 'premium-dd-overlay';
+      overlay.onclick = () => {
+        document.querySelectorAll('.premium-dd-menu, .premium-dd-overlay').forEach(el => el.remove());
+        trigger.classList.remove('active');
+      };
+      document.body.appendChild(overlay);
+      
+      const menu = document.createElement('div');
+      menu.className = 'premium-dd-menu';
+      menu.style.setProperty('--accent-rgb', accentVar);
+      
+      options.forEach(opt => {
+        const item = document.createElement('div');
+        item.className = 'premium-dd-item' + (opt.value === selectedValue ? ' selected' : '');
+        item.innerHTML = opt.label;
+        item.onclick = () => {
+          onSelectCallback(opt.value);
+          overlay.remove();
+          menu.remove();
+          trigger.classList.remove('active');
+        };
+        menu.appendChild(item);
+      });
+      
+      document.body.appendChild(menu);
+      
+      const menuHeight = menu.offsetHeight;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      
+      if (spaceBelow < menuHeight + 16 && spaceAbove > spaceBelow) {
+        menu.style.top = (rect.top + window.scrollY - menuHeight - 8) + 'px';
+        menu.style.transform = 'translateY(10px)';
+      } else {
+        menu.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+      }
+      
+      menu.style.left = (rect.left + window.scrollX) + 'px';
+      menu.style.width = rect.width + 'px';
+      
+      trigger.classList.add('active');
+      requestAnimationFrame(() => menu.classList.add('open'));
+    }
+
     // Force scroll to top on page load and manual restoration
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
@@ -1074,24 +1329,24 @@
     const GOALS = ["Make genuine friends", "Find study partners", "Build my career network", "Explore the UK", "Join a sports team", "Attend social events", "Get career guidance", "Find a mentor", "Buy or sell stuff", "Find an activity partner"];
 
     const GROUPS = [
-      { id: "ft", name: "Sunday Football", emoji: "⚽", it: ["Football"], gt: ["Join a sports team", "Make genuine friends"], members: 32, event: "5-a-side @ Hackney · May 25", desc: "Casual 5-a-side to competitive 11s. Any skill. Play, then eat somewhere good.", c: G, l: "#E6F4ED" },
-      { id: "cr", name: "Cricket Sundays", emoji: "🏏", it: ["Cricket"], gt: ["Join a sports team", "Make genuine friends"], members: 19, event: "Net Practice · Wembley · Jun 1", desc: "Weekend cricket for all levels — competitive matches and casual net sessions.", c: TL, l: "#E6F2EF" },
-      { id: "bg", name: "Board Game Café Nights", emoji: "🎲", it: ["Board Games"], gt: ["Make genuine friends", "Attend social events"], members: 28, event: "Draughts Café · May 28", desc: "Catan, Codenames, Ticket to Ride. Relaxed evenings at London's best cafés.", c: P, l: "#F2EAFA" },
-      { id: "bo", name: "Bollywood & Desi Nights", emoji: "💃", it: ["Bollywood & Desi Nights", "Cooking & Food"], gt: ["Make genuine friends", "Attend social events"], members: 61, event: "Desi Night @ Shoreditch · May 30", desc: "Dance nights, food crawls, Diwali, Holi. The best of South Asian culture in London.", c: R, l: "#FEF0EB" },
-      { id: "tc", name: "Tech & Career Circle", emoji: "💼", it: ["Tech & Coding", "Career Networking", "Entrepreneurship"], gt: ["Build my career network", "Get career guidance", "Find a mentor"], members: 54, event: "CV Workshop · May 27", desc: "Job apps, mock interviews, LinkedIn tips, company visits. Built for international grads.", c: B, l: "#E6F0FB" },
-      { id: "sp", name: "Study Pods", emoji: "📚", it: ["Study Groups"], gt: ["Find study partners"], members: 39, event: "Daily · Various Libraries", desc: "Accountability partners, group revision, matched by course type.", c: Y, l: "#FEF8E7" },
-      { id: "pw", name: "London Photo Walks", emoji: "📸", it: ["Photography"], gt: ["Explore the UK", "Make genuine friends"], members: 23, event: "Southbank Walk · Jun 2", desc: "Explore London's neighbourhoods through a lens. All cameras, zero pretension.", c: P, l: "#F2EAFA" },
-      { id: "co", name: "Concerts & Gigs Club", emoji: "🎤", it: ["Concerts & Live Gigs", "Music & Jamming"], gt: ["Make genuine friends", "Attend social events"], members: 44, event: "Gig Night · Brixton Academy · Jun 5", desc: "Group tickets, last-minute gig buddies, discovering new artists together.", c: R, l: "#FEF0EB" },
-      { id: "bu", name: "BuddyUp Hub", emoji: "🤝", it: ["BuddyUp — Find Activity Partners"], gt: ["Find an activity partner", "Make genuine friends"], members: 67, event: "Rolling · Post daily requests", desc: "Flying solo to a concert? Need a gym partner? Post it here. Someone will show up.", c: G, l: "#E6F4ED" },
-      { id: "mk", name: "Chutney Marketplace", emoji: "🛍️", it: ["Buy & Sell Marketplace"], gt: ["Buy or sell stuff"], members: 89, event: "Active daily · WhatsApp + meetups", desc: "Student-only buy & sell. Textbooks, furniture, appliances, clothes. Safe and local.", c: Y, l: "#FEF8E7" },
-      { id: "gm", name: "Gaming & Esports", emoji: "🎮", it: ["Gaming & Esports", "Tech & Coding"], gt: ["Make genuine friends", "Attend social events"], members: 36, event: "LAN Party · Stratford · Jun 7", desc: "FIFA tourneys, valorant squads, LAN parties and indie game nights.", c: P, l: "#F2EAFA" },
-      { id: "wl", name: "Wellness Circle", emoji: "🌿", it: ["Mental Health & Wellness", "Yoga & Meditation"], gt: ["Make genuine friends", "Attend social events"], members: 31, event: "Sunday Yoga · Hyde Park · May 25", desc: "Mental health check-ins, yoga sessions, meditation. No toxic positivity — just real support.", c: TL, l: "#E6F2EF" },
-      { id: "rn", name: "Running Club", emoji: "🏃", it: ["Running & Marathons", "Gym & Fitness"], gt: ["Join a sports team", "Make genuine friends"], members: 28, event: "Parkrun · Victoria Park · Sat 9am", desc: "Weekly parkruns, marathon training groups, casual jogs. All paces welcome.", c: G, l: "#E6F4ED" },
-      { id: "fd", name: "Desi Foodies", emoji: "🍛", it: ["Cooking & Food", "Street Food Hunts"], gt: ["Make genuine friends", "Attend social events"], members: 52, event: "Southall Food Tour · May 31", desc: "Restaurant hunts, home cooking meetups, honest reviews of every desi spot in London.", c: R, l: "#FEF0EB" },
-      { id: "fx", name: "Language Exchange", emoji: "🗣️", it: ["Language Exchange"], gt: ["Make genuine friends", "Explore the UK"], members: 25, event: "Weekly · Central London Cafés", desc: "Swap languages over coffee. Hindi, Tamil, Bengali, Telugu — and help with English too.", c: B, l: "#E6F0FB" },
-      { id: "tr", name: "UK Weekend Trips", emoji: "🗺️", it: ["UK Travel", "Hiking & Outdoors"], gt: ["Explore the UK", "Make genuine friends"], members: 47, event: "Peak District · Jun 1", desc: "Cotswolds, Lake District, Edinburgh. Group trips with people who actually show up.", c: TL, l: "#E6F2EF" },
-      { id: "fb", name: "Founders & Builders", emoji: "🚀", it: ["Entrepreneurship", "Tech & Coding"], gt: ["Build my career network", "Find a mentor"], members: 17, event: "Pitch Night · May 29", desc: "Building something? Find co-founders, share ideas, get feedback from people who get it.", c: R, l: "#FEF0EB" },
-      { id: "cc", name: "Content Creators", emoji: "🎬", it: ["Content Creation", "Photography"], gt: ["Make genuine friends", "Build my career network"], members: 21, event: "Collab Day · East London · Jun 4", desc: "YouTube, Instagram, TikTok — grow together. Collabs, shoots, editing tips.", c: Y, l: "#FEF8E7" },
+      { id: "ft", name: "Sunday Football", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="12 5 16 10 12 15 8 10"></polygon><polyline points="16 10 21 11"></polyline><polyline points="8 10 3 11"></polyline><polyline points="12 15 15 21"></polyline><polyline points="12 15 9 21"></polyline></svg>`, it: ["Football"], gt: ["Join a sports team", "Make genuine friends"], members: 32, event: "5-a-side @ Hackney · May 25", desc: "Casual 5-a-side to competitive 11s. Any skill. Play, then eat somewhere good.", c: G, l: "#E6F4ED" },
+      { id: "cr", name: "Cricket Sundays", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`, it: ["Cricket"], gt: ["Join a sports team", "Make genuine friends"], members: 19, event: "Net Practice · Wembley · Jun 1", desc: "Weekend cricket for all levels — competitive matches and casual net sessions.", c: TL, l: "#E6F2EF" },
+      { id: "bg", name: "Board Game Café Nights", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle></svg>`, it: ["Board Games"], gt: ["Make genuine friends", "Attend social events"], members: 28, event: "Draughts Café · May 28", desc: "Catan, Codenames, Ticket to Ride. Relaxed evenings at London's best cafés.", c: P, l: "#F2EAFA" },
+      { id: "bo", name: "Bollywood & Desi Nights", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`, it: ["Bollywood & Desi Nights", "Cooking & Food"], gt: ["Make genuine friends", "Attend social events"], members: 61, event: "Desi Night @ Shoreditch · May 30", desc: "Dance nights, food crawls, Diwali, Holi. The best of South Asian culture in London.", c: R, l: "#FEF0EB" },
+      { id: "tc", name: "Tech & Career Circle", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`, it: ["Tech & Coding", "Career Networking", "Entrepreneurship"], gt: ["Build my career network", "Get career guidance", "Find a mentor"], members: 54, event: "CV Workshop · May 27", desc: "Job apps, mock interviews, LinkedIn tips, company visits. Built for international grads.", c: B, l: "#E6F0FB" },
+      { id: "sp", name: "Study Pods", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>`, it: ["Study Groups"], gt: ["Find study partners"], members: 39, event: "Daily · Various Libraries", desc: "Accountability partners, group revision, matched by course type.", c: Y, l: "#FEF8E7" },
+      { id: "pw", name: "London Photo Walks", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>`, it: ["Photography"], gt: ["Explore the UK", "Make genuine friends"], members: 23, event: "Southbank Walk · Jun 2", desc: "Explore London's neighbourhoods through a lens. All cameras, zero pretension.", c: P, l: "#F2EAFA" },
+      { id: "co", name: "Concerts & Gigs Club", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>`, it: ["Concerts & Live Gigs", "Music & Jamming"], gt: ["Make genuine friends", "Attend social events"], members: 44, event: "Gig Night · Brixton Academy · Jun 5", desc: "Group tickets, last-minute gig buddies, discovering new artists together.", c: R, l: "#FEF0EB" },
+      { id: "bu", name: "BuddyUp Hub", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`, it: ["BuddyUp — Find Activity Partners"], gt: ["Find an activity partner", "Make genuine friends"], members: 67, event: "Rolling · Post daily requests", desc: "Flying solo to a concert? Need a gym partner? Post it here. Someone will show up.", c: G, l: "#E6F4ED" },
+      { id: "mk", name: "Chutney Marketplace", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>`, it: ["Buy & Sell Marketplace"], gt: ["Buy or sell stuff"], members: 89, event: "Active daily · WhatsApp + meetups", desc: "Student-only buy & sell. Textbooks, furniture, appliances, clothes. Safe and local.", c: Y, l: "#FEF8E7" },
+      { id: "gm", name: "Gaming & Esports", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2" ry="2"></rect><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line></svg>`, it: ["Gaming & Esports", "Tech & Coding"], gt: ["Make genuine friends", "Attend social events"], members: 36, event: "LAN Party · Stratford · Jun 7", desc: "FIFA tourneys, valorant squads, LAN parties and indie game nights.", c: P, l: "#F2EAFA" },
+      { id: "wl", name: "Wellness Circle", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9s9 4.03 9 9-4.03 9-9 9z"></path><path d="M12 2v4"></path><path d="M12 18v4"></path><path d="M4.93 4.93l2.83 2.83"></path><path d="M16.24 16.24l2.83 2.83"></path><path d="M2 12h4"></path><path d="M18 12h4"></path><path d="M4.93 19.07l2.83-2.83"></path><path d="M16.24 7.76l2.83-2.83"></path></svg>`, it: ["Mental Health & Wellness", "Yoga & Meditation"], gt: ["Make genuine friends", "Attend social events"], members: 31, event: "Sunday Yoga · Hyde Park · May 25", desc: "Mental health check-ins, yoga sessions, meditation. No toxic positivity — just real support.", c: TL, l: "#E6F2EF" },
+      { id: "rn", name: "Running Club", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`, it: ["Running & Marathons", "Gym & Fitness"], gt: ["Join a sports team", "Make genuine friends"], members: 28, event: "Parkrun · Victoria Park · Sat 9am", desc: "Weekly parkruns, marathon training groups, casual jogs. All paces welcome.", c: G, l: "#E6F4ED" },
+      { id: "fd", name: "Desi Foodies", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg>`, it: ["Cooking & Food", "Street Food Hunts"], gt: ["Make genuine friends", "Attend social events"], members: 52, event: "Southall Food Tour · May 31", desc: "Restaurant hunts, home cooking meetups, honest reviews of every desi spot in London.", c: R, l: "#FEF0EB" },
+      { id: "fx", name: "Language Exchange", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`, it: ["Language Exchange"], gt: ["Make genuine friends", "Explore the UK"], members: 25, event: "Weekly · Central London Cafés", desc: "Swap languages over coffee. Hindi, Tamil, Bengali, Telugu — and help with English too.", c: B, l: "#E6F0FB" },
+      { id: "tr", name: "UK Weekend Trips", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>`, it: ["UK Travel", "Hiking & Outdoors"], gt: ["Explore the UK", "Make genuine friends"], members: 47, event: "Peak District · Jun 1", desc: "Cotswolds, Lake District, Edinburgh. Group trips with people who actually show up.", c: TL, l: "#E6F2EF" },
+      { id: "fb", name: "Founders & Builders", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>`, it: ["Entrepreneurship", "Tech & Coding"], gt: ["Build my career network", "Find a mentor"], members: 17, event: "Pitch Night · May 29", desc: "Building something? Find co-founders, share ideas, get feedback from people who get it.", c: R, l: "#FEF0EB" },
+      { id: "cc", name: "Content Creators", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>`, it: ["Content Creation", "Photography"], gt: ["Make genuine friends", "Build my career network"], members: 21, event: "Collab Day · East London · Jun 4", desc: "YouTube, Instagram, TikTok — grow together. Collabs, shoots, editing tips.", c: Y, l: "#FEF8E7" },
     ];
 
     // Helper: translate hardcoded group colors (R, Y, G, P, B, TL) to theme CSS property targets
@@ -1156,7 +1411,7 @@
           <div style="text-align:center; padding: 48px 20px; animation: fadeInUp 0.5s ease both;">
             <div class="ai-loader-container">
               <div class="ai-pulse-orb">
-                <div class="ai-inner-core">🌶️</div>
+                <div class="ai-inner-core"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-red);"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
               </div>
               <div class="ai-scan-line"></div>
             </div>
@@ -1170,14 +1425,20 @@
 
       if (s.step === 0) {
         el.innerHTML = `<div style="text-align:center;padding-top:24px; animation: fadeInUp 0.5s ease both;">
-          <div style="margin-bottom:24px">${logoHTML()}</div>
-          <div style="font-family:'Outfit', sans-serif; font-size:15px;color:var(--color-red);font-weight:800;margin-bottom:18px;letter-spacing:.08em;text-transform:uppercase;">🌶️ Spice up your UK life</div>
-          <p style="font-size:16px;color:var(--text-muted);max-width:440px;margin:0 auto 36px;line-height:1.7">For international students who want more than just <em>study</em>. Real friendships, career wins, and circles that actually get you.</p>
+          <div class="app-brand" style="margin-bottom: 28px;">
+            <div style="margin-bottom:24px">${logoHTML()}</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Outfit', sans-serif; font-size:16.5px;color:var(--color-red);font-weight:800;letter-spacing:.08em;text-transform:uppercase; padding-right: 22px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+              Spice up your UK life
+            </div>
+          </div>
+          <div style="height: 2px; width: 180px; background: var(--color-red); margin: 0 auto 32px auto; border-radius: 2px; opacity: 0.25;"></div>
+          <p style="font-size:16px;color:var(--text-muted);max-width:440px;margin:0 auto 48px;line-height:1.7">For international students who want more than just <em>study</em>. Real friendships, and social circles that actually get you.</p>
           
           <div class="stat-row">
             <div class="stat"><div class="stat-num">600+</div><div class="stat-lbl">students</div></div>
             <div class="stat"><div class="stat-num">40+</div><div class="stat-lbl">circles</div></div>
-            <div class="stat"><div class="stat-num" style="color:var(--color-red)">🌶️</div><div class="stat-lbl">no bland vibes</div></div>
+            <div class="stat"><div class="stat-num" style="color:var(--color-red)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div><div class="stat-lbl">no bland vibes</div></div>
           </div>
           
           <button class="btn" style="max-width:280px;display:flex;margin:0 auto" onclick="go(1)">Get started →</button>
@@ -1197,10 +1458,10 @@
           
           <div class="field">
             <label class="lbl">Your university</label>
-            <select class="inp" onchange="st.uni=this.value;checkBtn('s1b',()=>st.name.trim()&&st.uni)">
-              <option value="">Select your university...</option>
-              ${UNIS.map(u => `<option${s.uni === u ? ' selected' : ''}>${u}</option>`).join('')}
-            </select>
+            <div class="premium-dd-trigger" onclick="openPremiumDropdown(event, UNIS.map(u => ({label: u, value: u})), st.uni, 'var(--color-red-rgb)', (val) => { st.uni = val; checkBtn('s1b',()=>st.name.trim()&&st.uni); render(); })">
+              <span class="${!st.uni ? 'placeholder' : ''}">${st.uni || 'Select your university...'}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
           </div>
           
           <button class="btn" id="s1b" onclick="go(2)" ${!s.name.trim() || !s.uni ? 'disabled' : ''}>Continue →</button>`;
@@ -1229,15 +1490,16 @@
           <h2 class="h1">Where are you from?</h2>
           <p class="sub">Help us connect you with people from home — and help you bond with others who get the references.</p>
           
+
           <div class="field">
             <label class="lbl">State / Region from India</label>
-            <select class="inp" onchange="st.homeState=this.value;checkBtn('s3b',()=>st.homeState)">
-              <option value="">Select your home state...</option>
-              ${STATES.map(s2 => `<option${st.homeState === s2 ? ' selected' : ''}>${s2}</option>`).join('')}
-            </select>
+            <div class="premium-dd-trigger" onclick="openPremiumDropdown(event, STATES.map(s => ({label: s, value: s})), st.homeState, 'var(--color-red-rgb)', (val) => { st.homeState = val; checkBtn('s3b',()=>st.homeState); render(); })">
+              <span class="${!st.homeState ? 'placeholder' : ''}">${st.homeState || 'Select your home state...'}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
           </div>
           
-          <button class="btn" id="s3b" onclick="go(4)" ${!s.homeState ? 'disabled' : ''}>Continue →</button>`;
+          <button class="btn" id="s3b" onclick="go(4)" ${!st.homeState ? 'disabled' : ''}>Continue →</button>`;
       }
 
       else if (s.step === 4) {
@@ -1247,9 +1509,10 @@
           <p class="sub">Pick at least 4. The more you pick, the better your matches.</p>
           ${INT_SECTIONS.map((sec, idx) => {
           // Dynamic chip color styling depending on Category
-          const isRedCat = sec.label.includes("Sports") || sec.label.includes("Social");
+          const isRedCat = sec.label.includes("Sports");
+          const isBlueCat = sec.label.includes("Social");
           const isGreenCat = sec.label.includes("Creative") || sec.label.includes("Explore");
-          const colorClass = isRedCat ? "" : (isGreenCat ? " grn" : " pur");
+          const colorClass = isRedCat ? "" : (isBlueCat ? " blu" : (isGreenCat ? " grn" : " pur"));
 
           return `
               <div class="section-label" style="animation-delay: ${idx * 0.05}s">${sec.label}</div>
@@ -1279,7 +1542,9 @@
               ${s.goals.includes(g) ? '<span>✓</span>' : ''}
             </button>`).join('')}
           </div>
-          <button class="btn" id="s5b" onclick="doMatch()" ${s.goals.length === 0 ? 'disabled' : ''}>Find my circles 🌶️</button>`;
+          <button class="btn" id="s5b" onclick="doMatch()" ${s.goals.length === 0 ? 'disabled' : ''}>
+            Find my circles <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>`;
       }
 
       else if (s.step === 6) {
@@ -1303,8 +1568,8 @@
                   <span class="tag" style="background:${themeColors.bg}; border: 1px solid ${themeColors.b}; color:${themeColors.c}">${lbl} · ${g.pct}%</span>
                   <div class="cname">${g.name}</div>
                 </div>
-                <div class="card-icon-container" style="background:${themeColors.bg}; border: 1px solid ${themeColors.b};">
-                  <div class="card-icon">${g.emoji}</div>
+                <div class="card-icon-container" style="background:${themeColors.bg}; border: 1px solid ${themeColors.b}; color: ${themeColors.c};">
+                  <div class="card-icon" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%">${g.icon}</div>
                 </div>
               </div>
               <p class="cdesc">${g.desc}</p>
@@ -1331,7 +1596,7 @@
           <div class="cta-box">
             <div style="font-family:'Outfit', sans-serif; font-size:18px; font-weight:800; color:var(--text); margin-bottom:8px">See all 40+ circles on Chutney</div>
             <div style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:20px; max-width: 420px; margin-left: auto; margin-right: auto;">Browse every community, RSVP to events, DM members, post BuddyUp requests.</div>
-            <button class="btn" style="max-width:240px; display:flex; margin:0 auto" onclick="alert('Coming soon! 🌶️')">Create free account</button>
+            <button class="btn" style="max-width:240px; display:flex; margin:0 auto" onclick="alert('Coming soon!')">Create free account</button>
           </div>
           
           <button class="back-link" onclick="reset()">Start over</button>`;
@@ -1417,6 +1682,70 @@
         iconMoon.classList.remove('active');
       }
     }
+
+    /* ── premium custom cursor ──────────────────────────────────────
+       Dot tracks the pointer exactly; the ring trails behind with a
+       little easing for a smooth, fluid feel. Scales up over anything
+       clickable, scales down on press, and never touches touch devices
+       at all — gated behind the same media feature the CSS uses.      */
+    (function initPremiumCursor() {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+      document.documentElement.classList.add('dd-cursor-on');
+
+      var dot = document.createElement('div');
+      dot.className = 'dd-cursor-dot';
+      var ring = document.createElement('div');
+      ring.className = 'dd-cursor-ring';
+      document.body.appendChild(dot);
+      document.body.appendChild(ring);
+
+      var mx = 0, my = 0, rx = 0, ry = 0, hasMoved = false;
+
+      function placeDot() {
+        dot.style.transform = 'translate(' + mx + 'px, ' + my + 'px) translate(-50%, -50%)';
+      }
+
+      window.addEventListener('mousemove', function (e) {
+        mx = e.clientX;
+        my = e.clientY;
+        if (!hasMoved) {
+          hasMoved = true;
+          rx = mx;
+          ry = my;
+          dot.classList.add('is-visible');
+          ring.classList.add('is-visible');
+        }
+        placeDot();
+      });
+
+      (function tick() {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        ring.style.transform = 'translate(' + rx + 'px, ' + ry + 'px) translate(-50%, -50%)';
+        requestAnimationFrame(tick);
+      })();
+
+      var interactiveSel = 'a, button, input, select, textarea, label, summary, [role="button"], [onclick]';
+
+      document.addEventListener('mouseover', function (e) {
+        if (e.target.closest(interactiveSel)) ring.classList.add('is-active');
+      });
+      document.addEventListener('mouseout', function (e) {
+        if (e.target.closest(interactiveSel)) ring.classList.remove('is-active');
+      });
+      document.addEventListener('mousedown', function () { ring.classList.add('is-pressed'); });
+      document.addEventListener('mouseup', function () { ring.classList.remove('is-pressed'); });
+
+      document.addEventListener('mouseleave', function () {
+        dot.classList.add('is-leaving');
+        ring.classList.add('is-leaving');
+      });
+      document.addEventListener('mouseenter', function () {
+        dot.classList.remove('is-leaving');
+        ring.classList.remove('is-leaving');
+      });
+    })();
   </script>
 </body>
 

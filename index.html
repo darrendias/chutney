@@ -31,6 +31,7 @@
       --bg: #FBF9F6;
       --bg-grid: rgba(138, 120, 102, 0.035);
       --text: #1C1917;
+      --cursor-rgb: 28, 25, 23;
       --text-muted: #6B6259;
       --border: rgba(220, 210, 198, 0.6);
       --border-glow-default: rgba(220, 210, 198, 0.3);
@@ -58,6 +59,7 @@
       --bg: #0D0B0A;
       --bg-grid: rgba(255, 255, 255, 0.015);
       --text: #F9F8F6;
+      --cursor-rgb: 249, 248, 246;
       --text-muted: #9E938A;
       --border: rgba(255, 255, 255, 0.06);
       --border-glow-default: rgba(255, 255, 255, 0.03);
@@ -88,6 +90,13 @@
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
+    }
+
+    /* Prevent text selection and drag on interactive UI elements to fix cursor flash */
+    a, button, .card, .btn, .row-btn, .chip, .cc, .theme-toggle-btn, .dd-back-btn, .opt, .ti {
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: none;
     }
 
     /* BACKGROUND DESIGN ELEMENTS */
@@ -152,9 +161,9 @@
     }
 
     .dd-nav-inner {
-      max-width: 600px;
+      max-width: 720px; /* Align to .grid max-width */
       margin: 0 auto;
-      padding: 14px 20px;
+      padding: 14px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -222,25 +231,7 @@
       gap: 18px;
     }
 
-    .dd-nav-link {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-decoration: none;
-      white-space: nowrap;
-      transition: color .2s;
-    }
-
-    .dd-nav-link:hover {
-      color: #FF5520;
-    }
-
     @media (max-width: 360px) {
-      .dd-nav-link {
-        font-size: 12px;
-      }
-
       .dd-nav-wordmark {
         font-size: 13px;
       }
@@ -248,6 +239,68 @@
       .dd-nav-right {
         gap: 12px;
       }
+    }
+
+    /* ── premium custom cursor — real mouse/trackpad only ─────────────
+       Touch devices are completely untouched: cursor:none only applies
+       inside this same media feature, so nothing changes on mobile.    */
+    @media (hover: hover) and (pointer: fine) {
+
+      html.dd-cursor-on,
+      html.dd-cursor-on * {
+        cursor: none !important;
+      }
+    }
+
+    .dd-cursor-dot,
+    .dd-cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999999;
+      border-radius: 50%;
+      opacity: 0;
+      will-change: transform;
+    }
+
+    .dd-cursor-dot.is-visible,
+    .dd-cursor-ring.is-visible {
+      opacity: 1;
+    }
+
+    .dd-cursor-dot.is-leaving,
+    .dd-cursor-ring.is-leaving {
+      opacity: 0;
+    }
+
+    .dd-cursor-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--text);
+      transition: opacity .2s;
+    }
+
+    .dd-cursor-ring {
+      width: 34px;
+      height: 34px;
+      border: 1.5px solid rgba(var(--cursor-rgb), 0.55);
+      box-shadow: 0 0 16px rgba(var(--cursor-rgb), 0.22);
+      transition: width .3s cubic-bezier(.34, 1.56, .64, 1), height .3s cubic-bezier(.34, 1.56, .64, 1),
+        background .3s, border-color .3s, box-shadow .3s, opacity .2s;
+    }
+
+    .dd-cursor-ring.is-active {
+      width: 52px;
+      height: 52px;
+      background: rgba(var(--cursor-rgb), 0.1);
+      border-color: rgba(var(--cursor-rgb), 0.85);
+      box-shadow: 0 0 26px rgba(var(--cursor-rgb), 0.35);
+    }
+
+    .dd-cursor-ring.is-pressed {
+      width: 26px;
+      height: 26px;
     }
 
 
@@ -804,9 +857,8 @@
     <div class="badge">
       <span></span> Built for international students in the UK
     </div>
-    <h1 class="hero-title">Four premium tools to help&nbsp;you<br><span>study abroad smarter</span></h1>
-    <p class="hero-sub">From finding the right university to understanding the real cost of living. Everything you need
-      as an international student, curated in one place. 100% free, fast, no sign-up needed.</p>
+    <h1 class="hero-title">Four premium tools to<br><span>master your UK journey</span></h1>
+    <p class="hero-sub">Find your best-fit university, map your exact visa timeline, decode real living costs, and discover your community. Everything you need to move with total confidence. 100% free. No sign-ups.</p>
   </div>
 
   <!-- TOOL GRID -->
@@ -818,7 +870,7 @@
       <div class="card-inner-glow"></div>
       <div class="card-content">
         <div class="card-icon-container">
-          <div class="card-icon">🌶️</div>
+          <div class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-red);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
         </div>
         <div class="card-label">Community</div>
         <h3 class="card-name">Chutney</h3>
@@ -836,7 +888,7 @@
       <div class="card-inner-glow"></div>
       <div class="card-content">
         <div class="card-icon-container">
-          <div class="card-icon">🎓</div>
+          <div class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-blue);"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg></div>
         </div>
         <div class="card-label">University Matching</div>
         <h3 class="card-name">UniMatch AI</h3>
@@ -855,7 +907,7 @@
       <div class="card-inner-glow"></div>
       <div class="card-content">
         <div class="card-icon-container">
-          <div class="card-icon">🗓️</div>
+          <div class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-teal);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>
         </div>
         <div class="card-label">Visa Planning</div>
         <h3 class="card-name">VisaPath UK</h3>
@@ -873,7 +925,7 @@
       <div class="card-inner-glow"></div>
       <div class="card-content">
         <div class="card-icon-container">
-          <div class="card-icon">💸</div>
+          <div class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-purple);"><path d="M18 7c0-5.333-8-5.333-8 0"/><path d="M10 7v14"/><path d="M6 21h12"/><path d="M6 13h10"/></svg></div>
         </div>
         <div class="card-label">Cost Planning</div>
         <h3 class="card-name">CostCheck UK</h3>
@@ -896,7 +948,7 @@
   <div class="footer">
     <div class="footer-name">Built by <strong>Darren Dias</strong> · MSc Digital Marketing, Royal Holloway · London
     </div>
-    <div class="footer-badge">🌶️ All tools are free</div>
+    <div class="footer-badge"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:text-bottom; margin-right:4px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>All tools are free</div>
   </div>
 
   <!-- INTERACTION SCRIPTS -->
@@ -950,6 +1002,70 @@
         iconMoon.classList.remove('active');
       }
     }
+
+    /* ── premium custom cursor ──────────────────────────────────────
+       Dot tracks the pointer exactly; the ring trails behind with a
+       little easing for a smooth, fluid feel. Scales up over anything
+       clickable, scales down on press, and never touches touch devices
+       at all — gated behind the same media feature the CSS uses.      */
+    (function initPremiumCursor() {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+      document.documentElement.classList.add('dd-cursor-on');
+
+      var dot = document.createElement('div');
+      dot.className = 'dd-cursor-dot';
+      var ring = document.createElement('div');
+      ring.className = 'dd-cursor-ring';
+      document.body.appendChild(dot);
+      document.body.appendChild(ring);
+
+      var mx = 0, my = 0, rx = 0, ry = 0, hasMoved = false;
+
+      function placeDot() {
+        dot.style.transform = 'translate(' + mx + 'px, ' + my + 'px) translate(-50%, -50%)';
+      }
+
+      window.addEventListener('mousemove', function (e) {
+        mx = e.clientX;
+        my = e.clientY;
+        if (!hasMoved) {
+          hasMoved = true;
+          rx = mx;
+          ry = my;
+          dot.classList.add('is-visible');
+          ring.classList.add('is-visible');
+        }
+        placeDot();
+      });
+
+      (function tick() {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        ring.style.transform = 'translate(' + rx + 'px, ' + ry + 'px) translate(-50%, -50%)';
+        requestAnimationFrame(tick);
+      })();
+
+      var interactiveSel = 'a, button, input, select, textarea, label, summary, [role="button"], [onclick]';
+
+      document.addEventListener('mouseover', function (e) {
+        if (e.target.closest(interactiveSel)) ring.classList.add('is-active');
+      });
+      document.addEventListener('mouseout', function (e) {
+        if (e.target.closest(interactiveSel)) ring.classList.remove('is-active');
+      });
+      document.addEventListener('mousedown', function () { ring.classList.add('is-pressed'); });
+      document.addEventListener('mouseup', function () { ring.classList.remove('is-pressed'); });
+
+      document.addEventListener('mouseleave', function () {
+        dot.classList.add('is-leaving');
+        ring.classList.add('is-leaving');
+      });
+      document.addEventListener('mouseenter', function () {
+        dot.classList.remove('is-leaving');
+        ring.classList.remove('is-leaving');
+      });
+    })();
   </script>
 </body>
 
